@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "watch": false,
+    "module": "CommonJS",
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "strict": false,
+    "outDir": "./build",
+    "rootDir": "./src",
+    "moduleResolution": "Node",
+    "importHelpers": true,
+
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+
+    "skipLibCheck": false,
+    "forceConsistentCasingInFileNames": true,
+    "strictNullChecks": true
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "name": "pierzyngogogo",
+  "version": "0.0.1",
+  "main": "build/index.js",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc -b",
+    "dev": "ts-node src/index.ts",
+    "test": "nodemon --exec ts-node src/index.ts",
+    "main": "node build/index.js",
+    "clean": "rm -r build",
+    "demodule": "rm -r node_modules"
+  },
+  "dependencies": {
+    "@discordx/importer": "^1.1.10",
+    "chalk": "4.1.2",
+    "discord.js": "^14.7.1",
+    "discordx": "^11.7.1",
+    "dotenv": "^16.0.3"
+  },
+  "devDependencies": {
+    "prisma": "^4.11.0"
+  }
+}
