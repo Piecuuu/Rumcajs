@@ -1,6 +1,7 @@
-import { config } from "dotenv"
-config()
-import { Bot } from "./bot"
-import { token } from "./config"
+import "./loadEnv.js"
+import { Bot } from "./bot.js"
+import { token } from "./config.js"
 
-export const { client } = new Bot(token)
+const bot = Bot
+bot.start(token)
+export const client = bot.Client

@@ -1,12 +1,16 @@
-import { importx } from "@discordx/importer"
+import { dirname, importx } from "@discordx/importer"
 import { IntentsBitField } from "discord.js"
 import { Client } from "discordx"
-import { logger } from "./config"
+import { logger } from "./config.js"
 
 export class Bot {
-  public client: Client
+  private static _client: Client
 
-  constructor(token: string) {
+  static get Client(): Client {
+    return this._client
+  }
+
+  static async start(token: string) {
     const client = new Client({
       intents: [
         IntentsBitField.Flags.Guilds,
@@ -16,11 +20,12 @@ export class Bot {
       ],
       botGuilds: [(client) => client.guilds.cache.map((guild) => guild.id)],
     })
-    this.client = client
+    this._client = client
 
     logger.debug("Registering commands...")
-    importx(__dirname + "/{events,commands}/**/*.{ts,js}");
+    const folder = dirname(import.meta.url)
+    await importx(`${folder}/{events,commands}/**/*.{ts,js}`).then(() => logger.debug("All Files Imported!"));
     logger.debug("Logging in...")
-    this.client.login(token)
+    this._client.login(token)
   }
 }

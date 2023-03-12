@@ -1,11 +1,12 @@
 {
-  "name": "pierzyngogogo",
+  "name": "szczurux",
   "version": "0.0.1",
   "main": "build/index.js",
   "license": "MIT",
+  "type": "module",
   "scripts": {
     "build": "tsc -b",
-    "dev": "ts-node src/index.ts",
+    "dev": "ts-node-esm src/index.ts",
     "test": "nodemon --exec ts-node src/index.ts",
     "main": "node build/index.js",
     "clean": "rm -r build",
@@ -16,7 +17,9 @@
     "chalk": "4.1.2",
     "discord.js": "^14.7.1",
     "discordx": "^11.7.1",
-    "dotenv": "^16.0.3"
+    "dotenv": "^16.0.3",
+    "getos": "^3.2.1",
+    "os-name": "^5.1.0"
   },
   "devDependencies": {
     "prisma": "^4.11.0"

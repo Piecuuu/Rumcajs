@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "ESNext",
     "watch": false,
-    "module": "CommonJS",
+    "module": "ESNext",
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "strict": false,
