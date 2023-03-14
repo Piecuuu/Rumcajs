@@ -1,6 +1,14 @@
-import { Logger } from "./PoggerLogger";
+import { Logger } from "./PoggerLogger.js";
 
-export const logger = new Logger("Arrow", true, true, true, true)
+export const logger = new Logger({
+  style: "Arrow",
+  color: true,
+  colorText: true,
+  debug: true,
+  logPath: "../logs",
+  saveLogs: true,
+  showTime: true
+})
 export const token: string = process.env.DISCORDTOKEN as string;
 
 export const Colors = {

@@ -1,6 +1,6 @@
 import { Discord, Once } from "discordx"
-import { client } from ".."
-import { logger } from "../config"
+import { client } from "../index.js"
+import { logger } from "../config.js"
 
 @Discord()
 class readyEvent {
@@ -9,7 +9,7 @@ class readyEvent {
   })
   async ready() {
     await client.guilds.fetch().then(() => {
-      logger.verbose("Guilds fetched.")
+      logger.debug("Guilds fetched.")
     });
     await client.initApplicationCommands({
       /*guild: {
@@ -27,7 +27,7 @@ class readyEvent {
         }
       },
     }).then(() => {
-      logger.info("Done registering commands!")
+      logger.debug("Done registering commands!")
     })
 
     logger.info(`Logged in as ${client.user?.tag} (${client.user?.id})`)

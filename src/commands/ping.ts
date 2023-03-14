@@ -1,6 +1,6 @@
 import { CommandInteraction, EmbedBuilder } from "discord.js";
 import { Discord, Slash } from "discordx";
-import { Colors } from "../config";
+import { Colors } from "../config.js";
 
 @Discord()
 class pingCommand {

@@ -1,4 +1,5 @@
 import chalk from "chalk";
+import { logger } from "./config.js";
 
 export type LoggerStyle =
   "Symbols" | "Emoji" | "Arrow" | "Text" | "Letter" | "ArrowBox";
@@ -105,12 +106,18 @@ export const getMessageInStyle = (style: LoggerStyle, message: string, colorText
   return things[status]
 }
 
+export interface LoggerOptions {
+  style: LoggerStyle,
+  color: boolean,
+  showTime: boolean,
+  colorText: boolean,
+  debug: boolean,
+  saveLogs: boolean,
+  logPath: string
+}
+
 export class Logger {
-  private _style: LoggerStyle;
-  private _color: boolean;
-  private _showTime: boolean;
-  private _colorText: boolean;
-  private _isDebug: boolean;
+  private _options: LoggerOptions
 
   /**
    * @param  {LoggerStyle="Symbols"} style
@@ -118,12 +125,8 @@ export class Logger {
    * @param  {boolean=true} showTime
    * @param  {boolean=false} colorText
    */
-  constructor(style: LoggerStyle = "Symbols", color: boolean = true, showTime: boolean = true, colorText: boolean = false, debug: boolean = false) {
-    this._style = style;
-    this._color = color;
-    this._showTime = showTime;
-    this._colorText = colorText;
-    this._isDebug = debug;
+  constructor(options: LoggerOptions) {
+    this._options = options
   }
   /**
    * @param  {string[]} ...message
@@ -132,19 +135,19 @@ export class Logger {
     const msg: string = message.join(" ")
 
     for (let i = 0; i < msg.split("\n").length; i++) {
-      console.log(getMessageInStyle(this._style, msg.split("\n")[i], this._colorText, this._showTime, "INFO"));
+      console.log(getMessageInStyle(this._options.style, msg.split("\n")[i], this._options.colorText, this._options.showTime, "INFO"));
     }
   }
   /**
    * @param  {string[]} ...message
    */
   debug(...message: string[]) {
-    if(!this._isDebug) return;
+    if(!this._options.debug) return;
 
     const msg: string = message.join(" ")
 
     for (let i = 0; i < msg.split("\n").length; i++) {
-      console.log(getMessageInStyle(this._style, msg.split("\n")[i], this._colorText, this._showTime, "DEBUG"));
+      console.log(getMessageInStyle(this._options.style, msg.split("\n")[i], this._options.colorText, this._options.showTime, "DEBUG"));
     }
   }
   /**
@@ -154,7 +157,7 @@ export class Logger {
     const msg: string = message.join(" ")
 
     for (let i = 0; i < msg.split("\n").length; i++) {
-      console.log(getMessageInStyle(this._style, msg.split("\n")[i], this._colorText, this._showTime, "ERROR"));
+      console.log(getMessageInStyle(this._options.style, msg.split("\n")[i], this._options.colorText, this._options.showTime, "ERROR"));
     }
   }
   /**
@@ -164,7 +167,7 @@ export class Logger {
     const msg: string = message.join(" ")
 
     for (let i = 0; i < msg.split("\n").length; i++) {
-      console.log(getMessageInStyle(this._style, msg.split("\n")[i], this._colorText, this._showTime, "FATAL"));
+      console.log(getMessageInStyle(this._options.style, msg.split("\n")[i], this._options.colorText, this._options.colorText, "FATAL"));
     }
   }
   /**
@@ -174,7 +177,7 @@ export class Logger {
     const msg: string = message.join(" ")
 
     for (let i = 0; i < msg.split("\n").length; i++) {
-      console.log(getMessageInStyle(this._style, msg.split("\n")[i], this._colorText, this._showTime, "WARN"));
+      console.log(getMessageInStyle(this._options.style, msg.split("\n")[i], this._options.colorText, this._options.colorText, "WARN"));
     }
   }
   /**
@@ -184,20 +187,20 @@ export class Logger {
     const msg: string = message.join(" ")
 
     for (let i = 0; i < msg.split("\n").length; i++) {
-      console.log(getMessageInStyle(this._style, msg.split("\n")[i], this._colorText, this._showTime, "VERBOSE"));
+      console.log(getMessageInStyle(this._options.style, msg.split("\n")[i], this._options.colorText, this._options.colorText, "VERBOSE"));
     }
   }
   /**
    * @param  {LoggerStyle} newStyle
    */
   switchCurrentStyle(newStyle: LoggerStyle) {
-    this._style = newStyle
+    this._options.style = newStyle
   }
   /**
    * @returns LoggerStyle
    */
   getCurrentStyle(): LoggerStyle {
-    return this._style;
+    return this._options.style;
   }
 }
 
@@ -218,3 +221,7 @@ const getDate = (): string => {
 
   return date;
 }
+
+process.on("exit", () => {
+  logger.debug("exited")
+})

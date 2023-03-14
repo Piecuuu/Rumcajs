@@ -1,5 +1,5 @@
 import { ArgsOf, Discord, On } from "discordx";
-import { client } from "..";
+import { client } from "../index.js";
 
 @Discord()
 class interactionCreate {
