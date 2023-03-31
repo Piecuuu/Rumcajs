@@ -1,5 +1,6 @@
 import chalk from "chalk";
-import { logger } from "./config.js";
+import fs from "node:fs"
+import path from "path"
 
 export type LoggerStyle =
   "Symbols" | "Emoji" | "Arrow" | "Text" | "Letter" | "ArrowBox";
@@ -118,6 +119,7 @@ export interface LoggerOptions {
 
 export class Logger {
   private _options: LoggerOptions
+  private _file: fs.WriteStream
 
   /**
    * @param  {LoggerStyle="Symbols"} style
@@ -127,6 +129,25 @@ export class Logger {
    */
   constructor(options: LoggerOptions) {
     this._options = options
+    let time = getDateAndTime()
+
+    //if(fs.readdirSync(this._options.logPath).includes(`${getDateAndTime()}`)) time = time + "-" +
+    //const file = fs.createWriteStream(`${path.join(this._options.logPath, (`${new Date().toLocaleString("pl-PL", {second: "2-digit", minute: "2-digit", hour: "2-digit", year: "numeric", month: "2-digit", day: "2-digit"}).split(",").join("-").replace(" ", "")}-${Math.floor(100000 + Math.random() * 900000)}.log`))}`)
+    //this._file = file
+
+    const exitHandler = () => {
+      this.debug("jajo")
+      //this._file.close()
+    }
+
+    process.on('exit', exitHandler);
+
+    process.on('SIGINT', exitHandler);
+
+    process.on('SIGUSR1', exitHandler);
+    process.on('SIGUSR2', exitHandler);
+
+    //process.on('uncaughtException', exitHandler);
   }
   /**
    * @param  {string[]} ...message
@@ -221,7 +242,3 @@ const getDate = (): string => {
 
   return date;
 }
-
-process.on("exit", () => {
-  logger.debug("exited")
-})
