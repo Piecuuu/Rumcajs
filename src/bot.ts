@@ -1,5 +1,5 @@
 import { dirname, importx } from "@discordx/importer"
-import { IntentsBitField } from "discord.js"
+import { ActivityType, IntentsBitField } from "discord.js"
 import { Client } from "discordx"
 import { logger } from "./config.js"
 
@@ -17,8 +17,18 @@ export class Bot {
         IntentsBitField.Flags.GuildMessages,
         IntentsBitField.Flags.GuildIntegrations,
         IntentsBitField.Flags.GuildModeration,
+        IntentsBitField.Flags.GuildMembers,
+        IntentsBitField.Flags.GuildMessageReactions
       ],
       botGuilds: [(client) => client.guilds.cache.map((guild) => guild.id)],
+      presence: {
+        activities: [
+          {
+            name: "ciebie",
+            type: ActivityType.Watching
+          }
+        ]
+      }
     })
     this._client = client
 

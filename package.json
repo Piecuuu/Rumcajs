@@ -1,6 +1,6 @@
 {
   "name": "szczurux",
-  "version": "0.0.1",
+  "version": "0.2.0",
   "main": "build/index.js",
   "license": "MIT",
   "type": "module",
@@ -15,15 +15,25 @@
   "dependencies": {
     "@discordx/importer": "^1.1.10",
     "@prisma/client": "^4.12.0",
+    "bcrypt": "^5.1.0",
+    "bson": "^5.2.0",
     "chalk": "4.1.2",
     "discord.js": "^14.9.0",
     "discordx": "^11.7.1",
     "dotenv": "^16.0.3",
+    "express": "^4.18.2",
     "getos": "^3.2.1",
+    "glob": "^10.2.2",
+    "jsonwebtoken": "^9.0.0",
+    "moment": "^2.29.4",
     "os-name": "^5.1.0",
-    "uuid": "^9.0.0"
+    "pagination.djs": "^4.0.9",
+    "uuid": "^9.0.0",
+    "yaml": "^2.2.1"
   },
   "devDependencies": {
+    "@types/express": "^4.17.17",
+    "@types/jsonwebtoken": "^9.0.2",
     "prisma": "^4.12.0"
   }
 }

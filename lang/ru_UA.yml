@@ -1,0 +1,91 @@
+flag: "🇺🇦"
+
+error.invalid-user: "Вказано невірного користувача."
+error.reason-too-long: "Вказана причина має довжину понад 300 символів."
+error.user-is-admin: "Цей користувач є модератором або власником."
+error.executor-not-admin: "Ви не є модератором."
+error.bot-no-perms: "У мене немає дозволів `{PERM}`."
+error.member-no-perms: "У вас немає дозволів `{PERM}`."
+error.target-has-higher-ranks: "Роль цього користувача вища за вашу."
+error.unknown-error: "Виникла незнайома помилка."
+error.not-guild-owner: "Ви не володієте сервером."
+
+cmd.moderator.neutral.no-infractions-given: "Цей модератор ще не видав жодного порушення."
+cmd.moderator.neutral.lookup-title: "Попередній перегляд модератора"
+cmd.moderator.neutral.footer-page: "Сторінка {CURRENTPAGE}/{TOTALPAGES}"
+cmd.moderator.neutral.footer-infractions: " | Видані порушення: {INFRACTIONSGIVEN}"
+cmd.moderator.neutral.footer-warns: " | Видані попередження: {WARNSGIVEN}"
+cmd.moderator.neutral.desc-infraction: "**Тип:** {INFRACTIONTYPE}\n**ID:** `{ID}`\n**Користувач:** <@{TARGET}>\n**Причина:** {REASON}\n**Дата створення:** {CREATIONDATE}"
+common.desc-infraction.time: "\n**Час:** {TIME}"
+
+cmd.infraction.list.no-infractions: "Цей користувач не має порушень."
+cmd.infraction.list.neutral.title: "Порушення користувачів"
+cmd.infraction.list.footer-page: "Сторінка {CURRENTPAGE}/{TOTALPAGES}"
+cmd.infraction.list.footer-infractions: " | Порушення: {TOTALINFRACTIONS}"
+cmd.infraction.list.footer-warns: " | Попередження: {TOTALWARNS}"
+cmd.infraction.list.desc-infraction: "**Тип:** {INFRACTIONTYPE}\n**ID:** `{ID}`\n**Модератор:** <@{MODERATOR}>\n**Причина:** {REASON}\n**Дата створення:** {CREATIONDATE}"
+
+none-word: "*Ні*"
+
+cmd.clear.error.limit: "Вказана кількість повідомлень для видалення перевищує 100.\nЗа обмеженням в *Discord API*, я не можу видалити більше 100 повідомлень за один раз."
+cmd.clear.nonexistent-channel: "Канал, в якому ви виконуєте цю команду, не існує, або це приватне повідомлення."
+cmd.clear.channel-arg-invalid: "Неправильно вказано канал."
+cmd.clear.success.deleted: "Успішно видалено **{AMOUNT}** повідомлень з {CHANNEL}."
+
+common.executed-by: "Зроблено {USER}"
+common.error.invalid-object-id: "Неправильний ID."
+common.error.time-too-long: "Занадто довго.\n*Максимум 27 днів.*"
+common.error.time-unit-invalid: "Вказано неправильну одиницю часу: `{UNIT}`.\n*Приклад використання*: `1w 10d 3h 30m`."
+common.error.time-duration-not-positive: "Час має бути позитивним."
+common.error.guild-not-set-up: "Цей сервер ще не налаштовано.\n*Налаштуйте його за допомогою:* {CMDMENTION}" #
+
+infraction.neutral.embed.title.member-kicked: "Користувача видалено"
+infraction.neutral.embed.title.member-muted: "Користувача вимкнено"
+infraction.neutral.embed.title.member-banned: "Користувача вигнано"
+infraction.neutral.embed.title.member-warned: "Користувача попереджено"
+
+infraction.neutral.embed.fields.time: "Час"
+infraction.neutral.embed.fields.user: "Користувач"
+infraction.neutral.embed.fields.moderator: "Модератор"
+infraction.neutral.embed.fields.reason: "Причина"
+infraction.success.removed-infraction: "Порушення було успішно усунуто."
+
+cmd.ban.banned: "***{USER} було заблоковано***"
+cmd.ban.not-punishable: "Nie można zbanować tego użytkownika!"
+
+cmd.kick.kicked: "***{USER} було виключено***"
+cmd.kick.not-punishable: "Nie można wyrzucić tego użytkownika!"
+
+cmd.mute.muted: "***{USER} було вимкнено***"
+cmd.mute.not-punishable: "Nie można wyciszyć tego użytkownika!"
+
+cmd.warn.warned: "***{USER} було попереджено***"
+
+cmd.config.modrole.add.error.max-modrole-reached: "Ви досягли ліміту модераторських ролей."
+cmd.config.modrole.add.error.modrole-already-added: "Ви додали ролі модератора."
+cmd.config.modrole.add.success.modrole-added: "Додано {ROLE} як модератора." #
+cmd.config.modrole.remove.error.modrole-not-existent: "Це не роль модератора." #
+cmd.config.modrole.remove.success.modrole-removed: "Видалено {ROLE} з модераторів." #
+
+cmd.config.specialrole.edit.success.specialrole-added: "Встановіть {ROLE} як спеціальну роль." #
+cmd.config.specialrole.clear.success.specialrole-cleared: "Очищена особлива роль." #
+
+cmd.config.alertchannel.set.success.alertchannel-set: "Встановіть {CHANNEL} як інформаційний канал." #
+cmd.config.alertchannel.clear.success.alertchannel-cleared: "Очистив інформаційний канал." #
+
+cmd.config.setup.error.guild-exists: "Цей сервер вже налаштований."
+cmd.config.setup.success: "Успішно налаштували сервер."
+
+cmd.config.language: "Щоб встановити мову, відповідайте з прапором вашої країни на повідомлення нижче."
+cmd.config.language.react-here: "Відреагуйте на це повідомлення, щоб встановити мову."
+cmd.config.language.time-is-up: "Минуло 3 хвилини. Запустіть цю команду ще раз, щоб спробувати ще раз."
+cmd.config.language.invalid-flag: "Не той прапор!"
+cmd.config.language.set: "Мову встановлено на **Українську** {FLAG}"
+cmd.config.language.no-translation: "Перекладу на цю мову поки що немає."
+
+dm.warn: "Ви отримали попередження на **{SERVERNAME}**"
+dm.mute: "Ви отримали попередження на **{SERVERNAME}**"
+dm.kick: "Вас було вигнано з **{SERVERNAME}**"
+dm.ban: "Вас було заблоковано на **{SERVERNAME}**"
+
+common.dm.for-reason: " за```{REASON}```"

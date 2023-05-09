@@ -1,7 +1,9 @@
 node_modules
 yarn.lock
+package-lock.json
 .env
 logs
 build
 target
 .vscode
+dist

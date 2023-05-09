@@ -1,6 +1,4 @@
 import chalk from "chalk";
-import fs from "node:fs"
-import path from "path"
 
 export type LoggerStyle =
   "Symbols" | "Emoji" | "Arrow" | "Text" | "Letter" | "ArrowBox";
@@ -119,7 +117,12 @@ export interface LoggerOptions {
 
 export class Logger {
   private _options: LoggerOptions
-  private _file: fs.WriteStream
+  private static _logger: Logger
+  //private _file: fs.WriteStream
+
+  static get Logger(): Logger {
+    return this._logger
+  }
 
   /**
    * @param  {LoggerStyle="Symbols"} style
@@ -135,18 +138,9 @@ export class Logger {
     //const file = fs.createWriteStream(`${path.join(this._options.logPath, (`${new Date().toLocaleString("pl-PL", {second: "2-digit", minute: "2-digit", hour: "2-digit", year: "numeric", month: "2-digit", day: "2-digit"}).split(",").join("-").replace(" ", "")}-${Math.floor(100000 + Math.random() * 900000)}.log`))}`)
     //this._file = file
 
-    const exitHandler = () => {
-      this.debug("jajo")
-      //this._file.close()
-    }
+    // TODO: Add logging to a file
 
-    process.on('exit', exitHandler);
-
-    process.on('SIGINT', exitHandler);
-
-    process.on('SIGUSR1', exitHandler);
-    process.on('SIGUSR2', exitHandler);
-
+    Logger._logger = this
     //process.on('uncaughtException', exitHandler);
   }
   /**
@@ -205,6 +199,7 @@ export class Logger {
    * @param  {string[]} ...message
    */
   verbose(...message: string[]) {
+    if(!process.argv.includes("-v")) return
     const msg: string = message.join(" ")
 
     for (let i = 0; i < msg.split("\n").length; i++) {

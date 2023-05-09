@@ -1,6 +1,7 @@
 import { Discord, Once } from "discordx"
-import { client } from "../index.js"
 import { logger } from "../config.js"
+import { Bot } from "../bot.js";
+import { MitycznyHandler } from "../handlers/mitycznyHandler.js";
 
 @Discord()
 class readyEvent {
@@ -8,10 +9,10 @@ class readyEvent {
     event: "ready"
   })
   async ready() {
-    await client.guilds.fetch().then(() => {
+    await Bot.Client.guilds.fetch().then(() => {
       logger.debug("Guilds fetched.")
     });
-    await client.initApplicationCommands({
+    await Bot.Client.initApplicationCommands({
       /*guild: {
         disable: {
           add: true,
@@ -30,6 +31,10 @@ class readyEvent {
       logger.debug("Done registering commands!")
     })
 
-    logger.info(`Logged in as ${client.user?.tag} (${client.user?.id})`)
+    logger.info(`Logged in as ${Bot.Client.user?.tag} (${Bot.Client.user?.id})`)
+
+    await Bot.Client.guilds.cache.map((guild) => {
+      MitycznyHandler.start(guild.id)
+    })
   }
 }

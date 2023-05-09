@@ -1,5 +1,7 @@
 import { ArgsOf, Discord, On } from "discordx";
-import { client } from "../index.js";
+import { Bot } from "../bot.js";
+import { Logger } from "../logger.js";
+import { InteractionType } from "discord.js";
 
 @Discord()
 class interactionCreate {
@@ -9,6 +11,7 @@ class interactionCreate {
   private onInteraction (
     [interaction]: ArgsOf<"interactionCreate">
   ) {
-    client.executeInteraction(interaction);
+    Logger.Logger.verbose(`Executed ${InteractionType[interaction.type]} in ${interaction.guild?.id} by ${interaction.member?.user.id}`)
+    Bot.Client.executeInteraction(interaction);
   }
 }
