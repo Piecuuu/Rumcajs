@@ -2,7 +2,7 @@ import express from "express"
 
 const app = express()
 
-import "./routes/loader.js"
+import "./loader.js"
 import { appRouter } from './decorator.js';
 import { authMiddleware } from "./middlewares/auth.js";
 import { Logger } from "../logger.js";
