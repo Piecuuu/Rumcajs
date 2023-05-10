@@ -78,7 +78,7 @@ cmd.config.setup.success: "Successfully set up this guild."
 
 cmd.config.language: "To set the language, react with a flag of your country to the message below."
 cmd.config.language.react-here: "React to this embed with your flag to set the language."
-cmd.config.language.time-is-up: "3 minutes are up. Rerun the command to try again."
+cmd.config.language.time-is-up: "2 minutes are up. Rerun the command to try again."
 cmd.config.language.invalid-flag: "Invalid flag!"
 cmd.config.language.set: "Set language to **English** {FLAG}"
 cmd.config.language.no-translation: "There isn't a translation for this language yet."

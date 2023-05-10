@@ -332,7 +332,7 @@ class Config {
       filter: collectorFilter,
       max: 1,
       maxEmojis: 1,
-      time: 60000
+      time: 120000
     })
 
     collector?.on("collect", async (reaction, _user) => {

@@ -78,7 +78,7 @@ cmd.config.setup.success: "Pomyślnie ustawiono serwer ." #
 
 cmd.config.language: "Aby ustawić język, zareaguj flagą twojego państwa na wiadmomość poniżej."
 cmd.config.language.react-here: "Zareaguj na tą wiadomość aby ustawić język"
-cmd.config.language.time-is-up: "3 minuty minęły. Uruchom ponowie tą komende aby spróbować jeszcze raz."
+cmd.config.language.time-is-up: "2 minuty minęły. Uruchom ponowie tą komende aby spróbować jeszcze raz."
 cmd.config.language.invalid-flag: "Nieprawidłowa flaga!"
 cmd.config.language.set: "Ustawiono język na **Polski** {FLAG}"
 cmd.config.language.no-translation: "Nie ma jeszcze tłumaczenia na ten język."

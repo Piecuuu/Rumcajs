@@ -78,7 +78,7 @@ cmd.config.setup.success: "Успішно налаштували сервер."
 
 cmd.config.language: "Щоб встановити мову, відповідайте з прапором вашої країни на повідомлення нижче."
 cmd.config.language.react-here: "Відреагуйте на це повідомлення, щоб встановити мову."
-cmd.config.language.time-is-up: "Минуло 3 хвилини. Запустіть цю команду ще раз, щоб спробувати ще раз."
+cmd.config.language.time-is-up: "Минуло 2 хвилини. Запустіть цю команду ще раз, щоб спробувати ще раз."
 cmd.config.language.invalid-flag: "Не той прапор!"
 cmd.config.language.set: "Мову встановлено на **Українську** {FLAG}"
 cmd.config.language.no-translation: "Перекладу на цю мову поки що немає."
