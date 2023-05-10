@@ -36,10 +36,13 @@ export const GuildExists: GuardFunction<
     }
   })
   if(exists == 0) {
+    const slc = (await interaction.guild?.commands.fetch()!).filter(cmd => {
+      return cmd.name == "configuration"
+    })
     const e = new ErrorEmbed(interaction.guild?.id!)
     e.setDescription((await (await e.translation).get("common.error.guild-not-set-up"))
-      .replace("{CMDMENTION}", `</configuration setup:${(await client.application?.commands.fetch("configuration"))?.id}>`))
-    return await interaction.editReply({
+      .replace("{CMDMENTION}", `</configuration setup:${slc?.first()?.id ?? "`/configuration setup`"}>`)) //(await client.application?.commands.cache.get("configuration"))?.id
+    return await interaction.reply({
       embeds: [e]
     })
   } else {
