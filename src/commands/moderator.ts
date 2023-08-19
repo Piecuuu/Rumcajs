@@ -2,7 +2,7 @@ import { ApplicationCommandOptionType, ChatInputCommandInteraction, EmbedBuilder
 import { Discord, Guard, Slash, SlashOption } from "discordx";
 import { Database } from "../db.js";
 import { NeutralEmbed, userNotAdminEmbed } from "../misc/embeds.js";
-import { Infraction } from "@prisma/client";
+import { DBInfraction } from "../db/connector.js";
 import { Pagination } from "pagination.djs";
 import { Format } from "../misc/format.js";
 import { PermissionsCheck } from "../misc/permcheck.js";
@@ -54,7 +54,7 @@ class Moderator {
     }) */
 
     const chunkSize = 3;
-    const infractionsChunks: Infraction[][] = [];
+    const infractionsChunks: DBInfraction[][] = [];
     for (let i = 0; i < filtered.length; i += chunkSize) {
       infractionsChunks.push(filtered.slice(i, i + chunkSize));
     }
@@ -75,7 +75,7 @@ class Moderator {
           .replace("{TARGET}", infraction.user)
           .replace("{REASON}", infraction.reason ? `\`${escapeMarkdown(infraction.reason)}\`` : await (await e.translation).get("none-word"))
           .replace("{CREATIONDATE}", `<t:${Math.floor(infraction.creationdate.getTime() / 1000)}:f>`)
-          .replace("{ID}", infraction.id)
+          .replace("{ID}", infraction.id.toString())
         + (infraction.timeuntil ? (
           (await (await e.translation).get("common.desc-infraction.time"))
             .replace("{TIME}", Format.secondsToHms(infraction.timeuntil!))

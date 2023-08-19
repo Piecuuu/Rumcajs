@@ -1,23 +1,22 @@
-import { Infraction } from "@prisma/client"
-import { ChannelType, User as DUser, EmbedBuilder, TextChannel } from "discord.js"
+import { ChannelType, User as DUser, EmbedBuilder, Guild, GuildMember, TextChannel } from "discord.js"
 import { EventEmitter } from "node:events"
+import { User } from "../api/routes/user.js"
 import { Bot } from "../bot.js"
 import { logger } from "../config.js"
 import { Database } from "../db.js"
 import { NeutralEmbed } from "../misc/embeds.js"
 import { Format } from "../misc/format.js"
+import { PermissionsCheck } from "../misc/permcheck.js"
 import { InfractionType } from "../types.js"
 import { Translation } from "./lang.js"
-import { Common } from "../misc/common.js"
-import { User } from "../api/routes/user.js"
-import { Logger } from "../logger.js"
+import { DBInfraction } from "../db/connector.js"
 
 class InfractionEmbed extends NeutralEmbed {
   constructor(guildId?: string) {
     super(guildId);
   }
 
-  async init(user: DUser, moderator: DUser, infraction: Infraction): Promise<this> {
+  async init(user: DUser, moderator: DUser, infraction: DBInfraction): Promise<this> {
     this.setFields([
       {
         name: await (await this.translation).get("infraction.neutral.embed.fields.user"),
@@ -38,7 +37,7 @@ class InfractionEmbed extends NeutralEmbed {
     }))
 
     this.setFooter({
-      text: infraction.id
+      text: infraction.id.toString()
     })
 
     if(infraction.reason) this.addFields({
@@ -53,11 +52,8 @@ class InfractionEmbed extends NeutralEmbed {
 
 export const infractionEmitter = new EventEmitter()
 
-infractionEmitter.on("send", async (infraction: Infraction) => {
-  await User.createUserIfDoesntExist(infraction.author)
-  await User.createUserIfDoesntExist(infraction.user)
-
-  await User.addPoints(infraction.author, infractionToPoints[infraction.type])
+infractionEmitter.on("send", async (infraction: DBInfraction) => {
+  await handleInfraction(infraction)
 
   let guild = await Database.Db.guild.findUnique({
     where: {
@@ -83,7 +79,7 @@ infractionEmitter.on("send", async (infraction: Infraction) => {
   //logger.debug(JSON.stringify(infraction, null, 2))
 })
 
-const sendToChannel = async (channel: TextChannel, infraction: Infraction) => {
+const sendToChannel = async (channel: TextChannel, infraction: DBInfraction) => {
   const user = await Bot.Client.users.fetch(infraction.user)
   const moderator = await Bot.Client.users.fetch(infraction.author)
 
@@ -115,7 +111,7 @@ const sendToChannel = async (channel: TextChannel, infraction: Infraction) => {
     inline: false
   }) */
   //! dupa Mervexia uwu kawaii onii-chan
-  let modEmbed: EmbedBuilder;
+  let modEmbed: InfractionEmbed;
   if(infraction.type == InfractionType.Warn) {
     const e = (await new InfractionEmbed(channel.guild.id).init(user, moderator, infraction))
     e.setAuthor({
@@ -150,7 +146,7 @@ const sendToChannel = async (channel: TextChannel, infraction: Infraction) => {
   if(infraction.timeuntil) {
     modEmbed.addFields([
       {
-        name: "Time",
+        name: await (await modEmbed.translation).get("cmd.infraction.get.field.time"),
         value: Format.secondsToHms(infraction.timeuntil)
       }
     ])
@@ -171,10 +167,43 @@ const sendToChannel = async (channel: TextChannel, infraction: Infraction) => {
   }
 }
 
-enum infractionToPoints {
+const handleInfraction = async (infraction: DBInfraction) => {
+  await User.createUserIfDoesntExist(infraction.author)
+  await User.createUserIfDoesntExist(infraction.user)
+
+  if(infraction.author == infraction.user) return;
+  const guild = await Bot.Client.guilds.fetch(infraction.guild).catch(() => {})
+  if(!guild) return
+  const member = await guild.members.fetch(infraction.user).catch(() => {})
+  if(!member) return
+
+
+  if(await PermissionsCheck.isAdmin(member)) return await User.setPoints(infraction.user, ((await User.getUser(infraction.user))?.points ?? 0) - (InfractionToPoints[infraction.type] * 2))
+  await User.addPoints(infraction.author, InfractionToPoints[infraction.type])
+}
+
+/* export const addInfraction = async (infraction, user: GuildMember, guild: Guild) => {
+  return await Database.Db.infraction.create({
+    data: infraction
+  }).then(async () => {
+    const dmembed = new NeutralEmbed(infraction?.guild)
+      dmembed.setDescription((await (await dmembed.translation).get("dm." + infraction.type))
+        .replace("{SERVERNAME}", guild?.name!)
+
+      + (infraction.reason ? (await (await dmembed.translation).get("common.dm.for-reason"))
+        .replace("{REASON}", infraction.reason) : ""))
+
+    infractionEmitter.emit("send", infraction)
+    await user.send({
+      embeds: [dmembed]
+    }).catch(() => {})
+  })
+} */
+
+export enum InfractionToPoints {
   "warn" = 2,
   "other" = 1,
   "ban" = 5,
   "kick" = 4,
-  "mute" = 3
+  "mute" = 2
 }

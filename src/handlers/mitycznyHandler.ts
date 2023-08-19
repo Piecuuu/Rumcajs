@@ -25,7 +25,7 @@ export class MitycznyHandler {
       select: {
         specialRole: true
       }
-    })
+    }).catch(() => {})
     if(!guild || !guild?.specialRole) return
 
     logger.debug(`Started updating special role on '${guildid}'`)
@@ -40,16 +40,16 @@ export class MitycznyHandler {
         select: {
           specialRole: true
         }
-      })
+      }).catch(() => {})
       if(!guild) return
       const mitid = await guild?.specialRole
       if(!mitid) return
       const rola = (await (await Bot.Client.guilds.fetch(guildid)).roles.fetch(mitid))
-      if(!rola?.editable || !await PermissionsCheck.isHavingPermission(await rola.guild.members.fetch(Bot.Client.user?.id!), PermissionFlagsBits.ManageRoles)) return
-
-      const random = getRandomColor()
-      logger.debug(`Updated role on '${guildid}' to ${random} - #${random.toString(16)}`);
-      rola?.setColor(random, "Special role color update")
+      if(rola?.editable || PermissionsCheck.isHavingPermission(await rola!.guild.members.fetch(Bot.Client.user?.id!), PermissionFlagsBits.ManageRoles)) {
+        const random = getRandomColor()
+        logger.debug(`Updated role on '${guildid}' to ${random} - #${random.toString(16)}`);
+        rola?.setColor(random, "Special role color update")
+      }
     }, 3600000)
   }
 }

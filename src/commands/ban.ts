@@ -10,6 +10,8 @@ import { Translation } from "../handlers/lang.js";
 import { ErrorEmbed, NeutralEmbed, SuccessEmbed, invalidUserEmbed, noPermissionsEmbed, targetRanksAreAboveExecutor, tooLongReasonEmbed, userIsAdminEmbed } from "../misc/embeds.js";
 import { PermissionsCheck } from "../misc/permcheck.js";
 import { InfractionType } from "../types.js";
+import { RumcajsId } from "../misc/id.js";
+import { AppealHandler } from "../handlers/appealHandler.js";
 
 @Discord()
 class Ban {
@@ -33,6 +35,13 @@ class Ban {
       required: false
     })
     reason: string,
+    @SlashOption({
+      name: "ephemeral",
+      description: "Ephemeral (silent)",
+      type: ApplicationCommandOptionType.Boolean,
+      required: false
+    })
+    ephemeral: boolean,
 
     interaction: CommandInteraction
   ) {
@@ -87,16 +96,18 @@ class Ban {
       })
     }
 
-    await interaction.deferReply();
+    await interaction.deferReply({
+      ephemeral: ephemeral ? true : false
+    });
 
     const infractionData = {
       type: InfractionType.Ban,
-      id: new ObjectId().toString(),
       author: interaction.user.id,
       guild: interaction.guild?.id!,
       reason: reason,
       user: user.id,
-      creationdate: new Date()
+      creationdate: new Date(),
+      id: RumcajsId.generateId()
     }
 
     await Database.Db.infraction.create({
@@ -106,18 +117,29 @@ class Ban {
       dmembed.setDescription((await (await dmembed.translation).get("dm.ban"))
         .replace("{SERVERNAME}", interaction.guild?.name!)
 
-      + (reason ? (await (await dmembed.translation).get("common.dm.for-reason"))
-        .replace("{REASON}", reason) : ""))
+        + (reason ? (await (await dmembed.translation).get("common.dm.for-reason"))
+          .replace("{REASON}", reason) : ""))
+      dmembed.setFooter({
+        text: out.id
+      });
 
-      await user.send({
-        embeds: [dmembed]
-      }).catch(() => {})
+      const comp = await AppealHandler.createAppealActionRow(interaction.guildId!);
+      if(comp != null) {
+        await user.send({
+          embeds: [dmembed],
+          components: [comp]
+        }).catch(() => {})
+      } else {
+        await user.send({
+          embeds: [dmembed]
+        }).catch(() => {})
+      }
 
       try {
         member.ban({
           reason: reason
         }).then(() => {
-          infractionEmitter.emit("send", infractionData)
+          infractionEmitter.emit("send", out)
         })
       } catch(err) {
         logger.error(err)
@@ -128,8 +150,8 @@ class Ban {
       const sembed = new SuccessEmbed(interaction.guild?.id!)
       sembed.setDescription(`${(await (await sembed.translation).get("cmd.ban.banned")).replace("{USER}", `<@${member.id}>`)}${reason ? ` | \`${escapeMarkdown(reason)}\`` : ""}`, true)
       sembed.setFooter({
-          text: `${out.id}`
-        })
+        text: `${out.id}`
+      })
 
       await interaction.editReply({
         embeds: [sembed]

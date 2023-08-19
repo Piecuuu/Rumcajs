@@ -1,14 +1,13 @@
-import { ObjectId } from "bson";
-import { ApplicationCommandOptionType, CommandInteraction, GuildMember, TextChannel, User, escapeMarkdown } from "discord.js";
+import { ApplicationCommandOptionType, CommandInteraction, GuildMember, User, escapeMarkdown } from "discord.js";
 import { Discord, Guard, Slash, SlashOption } from "discordx";
 import { Database } from "../db.js";
-import { NeutralEmbed, SuccessEmbed, invalidUserEmbed, targetRanksAreAboveExecutor, tooLongReasonEmbed, userIsAdminEmbed, userNotAdminEmbed } from "../misc/embeds.js";
+import { NotAdmin } from "../guards/NotAdmin.js";
 import { infractionEmitter } from "../handlers/infractionHandler.js";
+import { NeutralEmbed, SuccessEmbed, invalidUserEmbed, targetRanksAreAboveExecutor, tooLongReasonEmbed } from "../misc/embeds.js";
 import { PermissionsCheck } from "../misc/permcheck.js";
 import { InfractionType } from "../types.js";
-import { NotAdmin } from "../guards/NotAdmin.js";
-import { Bot } from "../bot.js";
-import { Translation } from "../handlers/lang.js";
+import { RumcajsId } from "../misc/id.js";
+import { AppealHandler } from "../handlers/appealHandler.js";
 
 @Discord()
 class Warn {
@@ -32,6 +31,13 @@ class Warn {
       required: false
     })
     reason: string,
+    @SlashOption({
+      name: "ephemeral",
+      description: "Ephemeral (silent)",
+      type: ApplicationCommandOptionType.Boolean,
+      required: false
+    })
+    ephemeral: boolean,
 
     interaction: CommandInteraction
   ) {
@@ -70,16 +76,18 @@ class Warn {
       embeds: [await userIsAdminEmbed(interaction.guild?.id!)]
     }) */
 
-    await interaction.deferReply();
+    await interaction.deferReply({
+      ephemeral: ephemeral ? true : false
+    });
 
     const infractionData = {
       type: InfractionType.Warn,
-      id: new ObjectId().toString(),
       author: interaction.user.id,
       guild: interaction.guild?.id!,
       reason: reason,
       user: user.id,
-      creationdate: new Date()
+      creationdate: new Date(),
+      id: RumcajsId.generateId()
     }
 
     await Database.Db.infraction.create({
@@ -89,14 +97,25 @@ class Warn {
       dmembed.setDescription((await (await dmembed.translation).get("dm.warn"))
         .replace("{SERVERNAME}", interaction.guild?.name!)
 
-      + (reason ? (await (await dmembed.translation).get("common.dm.for-reason"))
-        .replace("{REASON}", reason) : ""))
+        + (reason ? (await (await dmembed.translation).get("common.dm.for-reason"))
+          .replace("{REASON}", reason) : ""))
+      dmembed.setFooter({
+        text: out.id
+      });
 
-      await user.send({
-        embeds: [dmembed]
-      }).catch(() => {})
+      const comp = await AppealHandler.createAppealActionRow(interaction.guildId!);
+      if(comp != null) {
+        await user.send({
+          embeds: [dmembed],
+          components: [comp]
+        }).catch(() => {})
+      } else {
+        await user.send({
+          embeds: [dmembed]
+        }).catch(() => {})
+      }
 
-      infractionEmitter.emit("send", infractionData)
+      infractionEmitter.emit("send", out)
       const sembed = new SuccessEmbed(interaction.guild?.id!)
       sembed.setDescription(`${(await (await sembed.translation).get("cmd.warn.warned")).replace("{USER}", `<@${member.id}>`)}${reason ? ` | \`${escapeMarkdown(reason)}\`` : ""}`, true)
       sembed.setFooter({
@@ -111,7 +130,7 @@ class Warn {
 }
 
 
-/* async function a() {
+/* (async function a() {
   const Database = (await import("../db.js")).Database
   const { ObjectId } = await import("bson")
   const { SuccessEmbed } = await import("../misc/embeds.js")
@@ -123,17 +142,20 @@ class Warn {
     id: new ObjectId().toString(),
     author: "1051162989287448576",
     guild: "901213083740033116",
-    reason: "nienawiść na chacie i masz brudne gacie",
-    user: "751078930965987439",
+    reason: "śmierdzisz serem (test)",
+    user: "501311283493208092",
     creationdate: new Date()
   }
+
+  const member = `<@${infractionData.user}>`
+  const reason = infractionData.reason
 
   await Database.Db.infraction.create({
     data: infractionData
   }).then(async (out) => {
     infractionEmitter.emit("send", infractionData)
-    const sembed = new SuccessEmbed("901213083740033116")
-    sembed.setDescription(`${(await (await sembed.translation).get("cmd.warn.warned")).replace("{USER}", `<@751078930965987439>`)}${` | \`${escapeMarkdown("nienawiść na chacie i masz brudne gacie")}\``}`, true)
+    const sembed = new SuccessEmbed(infractionData.guild)
+    sembed.setDescription(`${(await (await sembed.translation).get("cmd.warn.warned")).replace("{USER}", `${member}`)}${` | \`${reason}\``}`, true)
     sembed.setFooter({
       text: `${out.id}`
     });
@@ -142,9 +164,9 @@ class Warn {
       embeds: [sembed]
     })
   })
-}
+})() */
 
-async function b() {
+/* async function b() {
   const Database = (await import("../db.js")).Database
   const { ObjectId } = await import("bson")
   const { checkEmoji, baseSuccessEmbed } = await import("../misc/embeds.js")

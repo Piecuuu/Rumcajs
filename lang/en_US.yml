@@ -25,6 +25,15 @@ cmd.infraction.list.footer-infractions: " | Total infractions: {TOTALINFRACTIONS
 cmd.infraction.list.footer-warns: " | Total warns: {TOTALWARNS}"
 cmd.infraction.list.desc-infraction: "**Type:** {INFRACTIONTYPE}\n**ID:** `{ID}`\n**Moderator:** <@{MODERATOR}>\n**Reason:** {REASON}\n**Creation Date:** {CREATIONDATE}"
 
+#cmd.infraction.get.desc-infraction: "**Type:** `{INFRACTIONTYPE}`\n**ID:** `{ID}`\n**User:** <@{TARGET}>\n**Moderator:** <@{MODERATOR}>\n**Reason:** {REASON}\n**Creation Date:** {CREATIONDATE}"
+cmd.infraction.get.field.user: "User"
+cmd.infraction.get.field.moderator: "Moderator"
+cmd.infraction.get.field.type: "Type"
+cmd.infraction.get.field.id: "ID"
+cmd.infraction.get.field.credate: "Creation Date"
+cmd.infraction.get.field.reason: "Reason"
+cmd.infraction.get.field.time: "Time"
+
 none-word: "*None*"
 
 cmd.clear.error.limit: "The provided amount of messages to clear is over 100.\nDue to a limitation in the *Discord API*, I can't delete more than 100 messages at once."
@@ -38,6 +47,7 @@ common.error.time-too-long: "Time too long.\n*Maximum 27 days.*"
 common.error.time-unit-invalid: "Provided an invalid time unit: `{UNIT}`\n*Example use*: `1w 10d 3h 30m`"
 common.error.time-duration-not-positive: "Time duration must be positive."
 common.error.guild-not-set-up: "This guild has not been set up yet.\n*Set it up by using:* {CMDMENTION}"
+common.error.number-negative: "Cannot process a negative number."
 
 infraction.neutral.embed.title.member-kicked: "Member Kicked"
 infraction.neutral.embed.title.member-muted: "Member Muted"
@@ -50,16 +60,24 @@ infraction.neutral.embed.fields.moderator: "Moderator"
 infraction.neutral.embed.fields.reason: "Reason"
 infraction.success.removed-infraction: "Successfully removed infraction"
 
-cmd.ban.banned: "***{USER} was banned***"
+infraction.dm.appeal.button: "Appeal"
+infraction.dm.appeal.sent: "Sent"
+infraction.appeal.reason: "Reason"
+infraction.appeal.embed.title: "Appeal"
+
+cmd.ban.banned: "***{USER} has been banned***"
 cmd.ban.not-punishable: "Member not bannable!"
 
-cmd.kick.kicked: "***{USER} was kicked***"
+cmd.kick.kicked: "***{USER} has been kicked***"
 cmd.kick.not-punishable: "Member not kickable!"
 
-cmd.mute.muted: "***{USER} was muted***"
+cmd.mute.muted: "***{USER} has been muted***"
 cmd.mute.not-punishable: "Member not mutable!"
 
-cmd.warn.warned: "***{USER} was warned***"
+cmd.warn.warned: "***{USER} has been warned***"
+
+cmd.unmute.unmuted: "***{USER} has been unmuted***"
+cmd.unmute.error: "I can't unmute this member."
 
 cmd.config.modrole.add.error.max-modrole-reached: "Reached modrole limit."
 cmd.config.modrole.add.error.modrole-already-added: "This role has already been added."
@@ -75,6 +93,9 @@ cmd.config.alertchannel.clear.success.alertchannel-cleared: "Cleared the alert c
 
 cmd.config.setup.error.guild-exists: "This guild is already set up."
 cmd.config.setup.success: "Successfully set up this guild."
+
+cmd.config.appealchannel.set.success.appealchannel-set: "Set {CHANNEL} as the appeals channel."
+cmd.config.appealchannel.clear.success.appealchannel-cleared: "Cleared the appeals channel."
 
 cmd.config.language: "To set the language, react with a flag of your country to the message below."
 cmd.config.language.react-here: "React to this embed with your flag to set the language."

@@ -1,4 +1,4 @@
-import { Infraction } from "@prisma/client";
+import { DBInfraction } from "../db/connector";
 import { ObjectId } from "bson";
 import { ApplicationCommandOptionType, ChatInputCommandInteraction, GuildMember, PermissionsBitField, User, escapeMarkdown } from "discord.js";
 import { Discord, Guard, Slash, SlashOption } from "discordx";
@@ -12,6 +12,8 @@ import { PermissionsCheck } from "../misc/permcheck.js";
 import { InfractionType } from "../types.js";
 import { Translation } from "../handlers/lang.js";
 import { NotAdmin } from "../guards/NotAdmin.js";
+import { RumcajsId } from "../misc/id.js";
+import { AppealHandler } from "../handlers/appealHandler.js";
 
 @Discord()
 class Mute {
@@ -42,6 +44,13 @@ class Mute {
       required: false
     })
     reason: string,
+    @SlashOption({
+      name: "ephemeral",
+      description: "Ephemeral (silent)",
+      type: ApplicationCommandOptionType.Boolean,
+      required: false
+    })
+    ephemeral: boolean,
     interaction: ChatInputCommandInteraction
   ) {
     try {
@@ -120,46 +129,59 @@ class Mute {
       })
     }
 
-    await interaction.deferReply();
+    await interaction.deferReply({
+      ephemeral: ephemeral ? true : false
+    });
 
-    const infractionData: Infraction = {
+    const infractionData = {
       type: InfractionType.Mute,
-      id: new ObjectId().toString(),
       author: interaction.user.id,
       guild: interaction.guild?.id!,
       reason: reason,
       user: user.id,
       creationdate: new Date(),
       timeuntil: toMS / 1000,
-      deleted: null
+      id: RumcajsId.generateId()
     }
 
-    if(!Number.isSafeInteger(infractionData.timeuntil!)) {
+    if(!Number.isSafeInteger(infractionData.timeuntil!) || toMS! > 2332800001) {
       return await interaction.editReply({
         embeds: [await timeTooLongEmbed(interaction.guild?.id!)]
       })
     }
 
+    /* if(toMS! > 2246400001) return await interaction.editReply({
+      embeds: [await timeTooLongEmbed(interaction.guild?.id!)]
+    }) */
+
     await Database.Db.infraction.create({
       data: infractionData
     }).then(async (out) => {
       try {
-        if(toMS! > 2246400000) return await interaction.editReply({
-          embeds: [await timeTooLongEmbed(interaction.guild?.id!)]
-        })
         const dmembed = new NeutralEmbed(interaction.guild?.id)
         dmembed.setDescription((await (await dmembed.translation).get("dm.mute"))
           .replace("{SERVERNAME}", interaction.guild?.name!)
 
-        + (reason ? (await (await dmembed.translation).get("common.dm.for-reason"))
-          .replace("{REASON}", reason) : ""))
+          + (reason ? (await (await dmembed.translation).get("common.dm.for-reason"))
+            .replace("{REASON}", reason) : ""))
+        dmembed.setFooter({
+          text: out.id
+        });
 
-        await user.send({
-          embeds: [dmembed]
-        }).catch(() => {})
+        const comp = await AppealHandler.createAppealActionRow(interaction.guildId!);
+        if(comp != null) {
+          await user.send({
+            embeds: [dmembed],
+            components: [comp]
+          }).catch(() => {})
+        } else {
+          await user.send({
+            embeds: [dmembed]
+          }).catch(() => {})
+        }
 
         member.timeout(toMS, reason).then(() => {
-          infractionEmitter.emit("send", infractionData)
+          infractionEmitter.emit("send", out)
         }).catch(async () => {
           return await interaction.editReply({
             content: await ((await (new Translation()).init((await Translation.getGuildLangCode(interaction.guild?.id!)))).get("error.unknown-error"))
@@ -188,8 +210,8 @@ class Mute {
       const sembed = new SuccessEmbed(interaction.guild?.id!)
       sembed.setDescription(`${(await (await sembed.translation).get("cmd.mute.muted")).replace("{USER}", `<@${member.id}>`)}${reason ? ` | \`${escapeMarkdown(reason)}\`` : ""}${toMS ? ` | ${mstostr}` : ""}`, true)
       sembed.setFooter({
-          text: `${out.id}`
-        })
+        text: `${out.id}`
+      })
 
       await interaction.editReply({
         embeds: [sembed]

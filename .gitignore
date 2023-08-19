@@ -7,3 +7,10 @@ build
 target
 .vscode
 dist
+prisma/migrations
+prisma/gen
+*.todo
+*.db
+.DS_STORE
+*.exe
+.clinic

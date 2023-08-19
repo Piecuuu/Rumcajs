@@ -1,12 +1,15 @@
 import { ApplicationCommandOptionType, Channel, ChatInputCommandInteraction, MessageReaction, Role, User } from "discord.js";
 import { Discord, Guard, Slash, SlashGroup, SlashOption } from "discordx";
 import { APIGuild } from "../api/routes/guild.js";
+import { dbSettings } from "../config.js";
+import { Guild } from "../controllers/guild.js";
 import { Database } from "../db.js";
+import { DBGuild } from "../db/connector.js";
 import { GuildExists } from "../guards/GuildExists.js";
-import { NotAdmin } from "../guards/NotAdmin.js";
-import { ErrorEmbed, NeutralEmbed, SuccessEmbed } from "../misc/embeds.js";
-import { LanguageFlags, Translation } from "../handlers/lang.js";
 import { NotOwner } from "../guards/NotOwner.js";
+import { LanguageFlags, Translation } from "../handlers/lang.js";
+import { MitycznyHandler } from "../handlers/mitycznyHandler.js";
+import { ErrorEmbed, NeutralEmbed, SuccessEmbed } from "../misc/embeds.js";
 
 @Discord()
 @SlashGroup({ name: "configuration", description: "Commands for configuring the bot." })
@@ -46,7 +49,13 @@ class Config {
       }
     })
 
-    if(oldRoles?.adminRoles.length! > 100) {
+    const og = oldRoles as DBGuild
+    let or = oldRoles?.adminRoles
+    if(dbSettings.provider == "sqlite" || dbSettings.provider == "mysql") {
+      or = (og.adminRoles as any).split(",")
+    }
+
+    if(or?.length! > 100) {
       const e = new ErrorEmbed(interaction.guild?.id!)
       e.setDescription(await (await e.translation).get("cmd.config.modrole.add.error.max-modrole-reached"), true)
       return await interaction.editReply({
@@ -55,24 +64,33 @@ class Config {
     }
 
 
-    if(oldRoles?.adminRoles.includes(role.id)) {
+    if(or?.includes(role.id)) {
       const e = new ErrorEmbed(interaction.guild?.id!)
       e.setDescription(await (await e.translation).get("cmd.config.modrole.add.error.modrole-already-added"), true)
       return await interaction.editReply({
         embeds: [e]
       })
     }
-
-    await Database.Db.guild.update({
+    const sqlitedata = {
       where: {
         guildid: interaction.guild?.id
       },
       data: {
-        adminRoles: oldRoles?.adminRoles.concat(role.id)
+        adminRoles: or?.concat(role.id).join(",")
       }
-    }).then(async () => {
+    }
+
+    await Database.Db.guild.update((dbSettings.provider == "sqlite" || dbSettings.provider == "mysql") ? sqlitedata : {
+      where: {
+        guildid: interaction.guild?.id
+      },
+      data: {
+        adminRoles: or?.concat(role.id)
+      }
+    } as any).then(async () => {
       const e = new SuccessEmbed(interaction.guild?.id)
-      e.setDescription(await (await e.translation).get("cmd.config.modrole.add.success.modrole-added"), true)
+      e.setDescription((await (await e.translation).get("cmd.config.modrole.add.success.modrole-added"))
+        .replace("{ROLE}", `<@&${role.id}>`), true)
       return await interaction.editReply({
         embeds: [e]
       })
@@ -112,8 +130,13 @@ class Config {
         embeds: [e]
       })
     }) */
+    const og = oldRoles as DBGuild
+    let or = oldRoles?.adminRoles
+    if(dbSettings.provider == "sqlite" || dbSettings.provider == "mysql") {
+      or = (og.adminRoles as any).split(",")
+    }
 
-    if(!oldRoles?.adminRoles.includes(role.id)) {
+    if(!or?.includes(role.id)) {
       const e = new ErrorEmbed(interaction.guild?.id!)
       e.setDescription(await (await e.translation).get("cmd.config.modrole.remove.error.modrole-not-existent"), true)
       return await interaction.editReply({
@@ -121,20 +144,30 @@ class Config {
       })
     }
 
-    const filtered = oldRoles?.adminRoles.filter((r) => {
+    const filtered = or.filter((r) => {
       r != role.id
     })
 
-    await Database.Db.guild.update({
+    const sqlitedata = {
+      where: {
+        guildid: interaction.guild?.id
+      },
+      data: {
+        adminRoles: filtered.join(",")
+      }
+    }
+
+    await Database.Db.guild.update((dbSettings.provider == "sqlite" || dbSettings.provider == "mysql") ? sqlitedata : {
       where: {
         guildid: interaction.guild?.id
       },
       data: {
         adminRoles: filtered
       }
-    }).then(async () => {
+    } as any).then(async () => {
       const e = new SuccessEmbed(interaction.guild?.id)
-      e.setDescription(await (await e.translation).get("cmd.config.modrole.remove.success.modrole-removed"), true)
+      e.setDescription((await (await e.translation).get("cmd.config.modrole.remove.success.modrole-removed"))
+        .replace("{ROLE}", `<@&${role.id}>`), true)
       return await interaction.editReply({
         embeds: [e]
       })
@@ -169,7 +202,9 @@ class Config {
       }
     }).then(async () => {
       const e = new SuccessEmbed(interaction.guild?.id)
-      e.setDescription(await (await e.translation).get("cmd.config.specialrole.edit.success.specialrole-added"), true)
+      e.setDescription((await (await e.translation).get("cmd.config.specialrole.edit.success.specialrole-added"))
+        .replace("{ROLE}", `<@&${role.id}>`), true)
+      await MitycznyHandler.start(interaction.guild?.id!)
       return await interaction.editReply({
         embeds: [e]
       })
@@ -178,7 +213,7 @@ class Config {
 
   @Slash({
     name: "specialrole",
-    description: "Edit special role.",
+    description: "Clear special role.",
   })
   @SlashGroup("clear", "configuration")
   @Guard(NotOwner, GuildExists)
@@ -232,7 +267,8 @@ class Config {
       }
     }).then(async () => {
       const e = new SuccessEmbed(interaction.guild?.id)
-      e.setDescription(await (await e.translation).get("cmd.config.alertchannel.set.success.alertchannel-set"), true)
+      e.setDescription((await (await e.translation).get("cmd.config.alertchannel.set.success.alertchannel-set"))
+        .replace("{CHANNEL}", `<#${channel.id}>`), true)
       return await interaction.editReply({
         embeds: [e]
       })
@@ -286,7 +322,9 @@ class Config {
       })
     }
 
-    await APIGuild.createGuild(interaction.guild?.id!).then(async () => {
+    await Guild.add({
+      guildid: interaction.guildId
+    } as DBGuild).then(async () => {
       const e = new SuccessEmbed(interaction.guild?.id)
       e.setDescription(await (await e.translation).get("cmd.config.setup.success"), true)
       return await interaction.editReply({
@@ -363,5 +401,69 @@ class Config {
       })
       collector.stop("time")
     })
+  }
+
+  @Slash({
+    name: "appealchannel",
+    description: "Set the appeals channel"
+  })
+  @SlashGroup("set", "configuration")
+  @Guard(NotOwner, GuildExists)
+  async setAppealChannel(
+    @SlashOption({
+      name: "channel",
+      description: "Channel to set as the alert channel.",
+      type: ApplicationCommandOptionType.Channel,
+      required: true
+    })
+    channel: Channel,
+    interaction: ChatInputCommandInteraction
+  ) {
+    await interaction.deferReply({
+      ephemeral: true
+    })
+    await Database.Db.guild.update({
+      where: {
+        guildid: interaction.guild?.id!
+      },
+      data: {
+        appealChannel: channel.id
+      }
+    }).then(async () => {
+      const e = new SuccessEmbed(interaction.guild?.id)
+      e.setDescription((await (await e.translation).get("cmd.config.appealchannel.set.success.appealchannel-set"))
+        .replace("{CHANNEL}", `<#${channel.id}>`), true)
+      return await interaction.editReply({
+        embeds: [e]
+      })
+    }).catch(() => {})
+  }
+
+  @Slash({
+    name: "appealchannel",
+    description: "Clear the appeals channel"
+  })
+  @SlashGroup("clear", "configuration")
+  @Guard(NotOwner, GuildExists)
+  async clearAppealChannel(
+    interaction: ChatInputCommandInteraction
+  ) {
+    await interaction.deferReply({
+      ephemeral: true
+    })
+    await Database.Db.guild.update({
+      where: {
+        guildid: interaction.guild?.id!
+      },
+      data: {
+        appealChannel: null
+      }
+    }).then(async () => {
+      const e = new SuccessEmbed(interaction.guild?.id)
+      e.setDescription(await (await e.translation).get("cmd.config.appealchannel.clear.success.appealchannel-cleared"), true)
+      return await interaction.editReply({
+        embeds: [e]
+      })
+    }).catch(() => {})
   }
 }

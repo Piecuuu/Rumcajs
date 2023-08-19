@@ -3,8 +3,8 @@ import { Colors } from "../config.js";
 import { PermissionsCheck } from "./permcheck.js";
 import { Translation } from "../handlers/lang.js";
 
-export const crossEmoji = "<:cross:1095323462387634276>"
-export const checkEmoji = "<:check:1095323464933580941>"
+export const crossEmoji = "<:rumcajs_cross:1105822008056483840>"
+export const checkEmoji = "<:rumcajs_check:1105822011864920084>"
 
 export class BaseEmbed extends EmbedBuilder {
   public translation: Promise<Translation>

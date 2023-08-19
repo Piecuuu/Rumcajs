@@ -25,6 +25,14 @@ cmd.infraction.list.footer-infractions: " | Порушення: {TOTALINFRACTION
 cmd.infraction.list.footer-warns: " | Попередження: {TOTALWARNS}"
 cmd.infraction.list.desc-infraction: "**Тип:** {INFRACTIONTYPE}\n**ID:** `{ID}`\n**Модератор:** <@{MODERATOR}>\n**Причина:** {REASON}\n**Дата створення:** {CREATIONDATE}"
 
+cmd.infraction.get.field.user: "Користувач"
+cmd.infraction.get.field.moderator: "Модератор"
+cmd.infraction.get.field.type: "Тип"
+cmd.infraction.get.field.id: "ID"
+cmd.infraction.get.field.credate: "Дата створення"
+cmd.infraction.get.field.reason: "Причина"
+cmd.infraction.get.field.time: "Час"
+
 none-word: "*Ні*"
 
 cmd.clear.error.limit: "Вказана кількість повідомлень для видалення перевищує 100.\nЗа обмеженням в *Discord API*, я не можу видалити більше 100 повідомлень за один раз."
@@ -38,6 +46,7 @@ common.error.time-too-long: "Занадто довго.\n*Максимум 27 д
 common.error.time-unit-invalid: "Вказано неправильну одиницю часу: `{UNIT}`.\n*Приклад використання*: `1w 10d 3h 30m`."
 common.error.time-duration-not-positive: "Час має бути позитивним."
 common.error.guild-not-set-up: "Цей сервер ще не налаштовано.\n*Налаштуйте його за допомогою:* {CMDMENTION}" #
+common.error.number-negative: "Неможливо обробити від'ємне число."
 
 infraction.neutral.embed.title.member-kicked: "Користувача видалено"
 infraction.neutral.embed.title.member-muted: "Користувача вимкнено"
@@ -50,6 +59,11 @@ infraction.neutral.embed.fields.moderator: "Модератор"
 infraction.neutral.embed.fields.reason: "Причина"
 infraction.success.removed-infraction: "Порушення було успішно усунуто."
 
+infraction.dm.appeal.button: "Апеляція"
+infraction.dm.appeal.sent: "Надіслано"
+infraction.appeal.reason: "Причина"
+infraction.appeal.embed.title: "Апеляція"
+
 cmd.ban.banned: "***{USER} було заблоковано***"
 cmd.ban.not-punishable: "Nie można zbanować tego użytkownika!"
 
@@ -60,6 +74,9 @@ cmd.mute.muted: "***{USER} було вимкнено***"
 cmd.mute.not-punishable: "Nie można wyciszyć tego użytkownika!"
 
 cmd.warn.warned: "***{USER} було попереджено***"
+
+cmd.unmute.unmuted: "***{USER} було приглушено***" #
+cmd.unmute.error: "Я не можу приглушений звук цього користувача." #
 
 cmd.config.modrole.add.error.max-modrole-reached: "Ви досягли ліміту модераторських ролей."
 cmd.config.modrole.add.error.modrole-already-added: "Ви додали ролі модератора."
@@ -75,6 +92,9 @@ cmd.config.alertchannel.clear.success.alertchannel-cleared: "Очистив ін
 
 cmd.config.setup.error.guild-exists: "Цей сервер вже налаштований."
 cmd.config.setup.success: "Успішно налаштували сервер."
+
+cmd.config.appealchannel.set.success.appealchannel-set: "Встановіть {CHANNEL} як канал апеляцій."
+cmd.config.appealchannel.clear.success.appealchannel-cleared: "Очистили апеляційний канал."
 
 cmd.config.language: "Щоб встановити мову, відповідайте з прапором вашої країни на повідомлення нижче."
 cmd.config.language.react-here: "Відреагуйте на це повідомлення, щоб встановити мову."

@@ -4,6 +4,10 @@ import Route from "../decorator.js";
 import { ErrorModel } from "../models.js";
 import { ObjectId } from "bson";
 import { Translation } from "../../handlers/lang.js";
+import { RumcajsId } from "../../misc/id.js";
+import { dbSettings } from "../../config.js";
+import { DBGuild } from "../../db/connector.js";
+import { Guild } from "../../controllers/guild.js";
 
 export class APIGuild {
   @Route({
@@ -22,16 +26,6 @@ export class APIGuild {
     res.status(200).json(guild)
   }
 
-  static async createGuild(guildId: string) {
-    return await Database.Db.guild.create({
-      data: {
-        guildid: guildId,
-        adminRoles: [],
-        id: new ObjectId().toString()
-      }
-    }).catch(() => {})
-  }
-
   static async setLanguage(guildId: string, code: string) {
     if(Translation.guildLanguageCache[guildId]) {
       delete Translation.guildLanguageCache[guildId]
@@ -41,13 +35,10 @@ export class APIGuild {
         guildid: guildId
       }
     }) == 0) {
-      await Database.Db.guild.create({
-        data: {
-          guildid: guildId,
-          id: new ObjectId().toString(),
-          preferedLang: code
-        }
-      }).catch(() => {
+      await Guild.add({
+        preferedLang: code,
+        guildid: guildId
+      } as DBGuild).catch(() => {
         throw new Error()
       })
       return

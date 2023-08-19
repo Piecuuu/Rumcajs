@@ -1,16 +1,18 @@
-import { PrismaClient } from "@prisma/client";
-import { isDebug, logger } from "./config.js";
+import { dbSettings, isDebug, logger } from "./config.js";
 import { exitHandler } from "./index.js";
+import { DBProvider } from "./types.js";
+import DBConnector from "./db/connector";
+import { PrismaClientOptions } from "@prisma/client/runtime/index.js";
 
 export class Database {
-  private static _db: PrismaClient
+  private static _db: DBConnector
 
   static get Db() {
     return this._db
   }
 
   static async start() {
-    this._db = new PrismaClient((isDebug ? {
+    const dbOpt: PrismaClientOptions | undefined = isDebug ? {
       log: [
         {
           emit: "stdout",
@@ -29,11 +31,60 @@ export class Database {
           level: "warn"
         }
       ]
-    } : undefined))
+    } : undefined
+
+
+    switch(this.dbProvider) {
+      case "mongodb": {
+        this._db = new (await import("../prisma/gen/mongo/index.js")).PrismaClient(dbOpt as any) as DBConnector
+        break
+      }
+      case "sqlite": {
+        this._db = new (await import("../prisma/gen/sqlite/index.js")).PrismaClient(dbOpt as any) as DBConnector
+        break
+      }
+      case "mysql": {
+        this._db = new (await import("../prisma/gen/mysql/index.js")).PrismaClient(dbOpt as any) as DBConnector
+        break
+      }
+      case "postgresql": {
+        this._db = new (await import("../prisma/gen/pg/index.js")).PrismaClient(dbOpt as any) as DBConnector
+        break
+      }
+    }
+
+    /* this._db = new PrismaClient((isDebug ? {
+      log: [
+        {
+          emit: "stdout",
+          level: "query"
+        },
+        {
+          emit: "stdout",
+          level: "error"
+        },
+        {
+          emit: "stdout",
+          level: "info"
+        },
+        {
+          emit: "stdout",
+          level: "warn"
+        }
+      ]
+    } : undefined)) */
     this._db.$connect().catch((err) => {
       logger.fatal(`Cannot connect to the database!\n${err}`)
-      exitHandler(1)
+      exitHandler("", 1)
     })
     return this._db
   }
+
+
+
+  private static get dbProvider(): DBProvider {
+    return dbSettings.provider
+  }
 }
+
+/* export let db: MongoConnector | PGConnector; */

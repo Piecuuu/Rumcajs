@@ -1,8 +1,10 @@
 import { GuildMember, Permissions, PermissionsBitField, User } from "discord.js";
-import { Owners } from "../config.js";
+import { Owners, dbSettings } from "../config.js";
 import { Database } from "../db.js";
 import { Common } from "./common.js";
 import { APIGuild } from "../api/routes/guild.js";
+import { DBGuild } from "../db/connector.js";
+import { Guild } from "../controllers/guild.js";
 
 export class PermissionsCheck {
   static async isAdmin(member: GuildMember): Promise<boolean> {
@@ -17,18 +19,26 @@ export class PermissionsCheck {
     })
     const guildfetched = member.guild
 
+    const g = guild as DBGuild
+    let r = g?.adminRoles
+    if(dbSettings.provider == "sqlite" || dbSettings.provider == "mysql") {
+      r = (g.adminRoles as any).split(",")
+    }
+
     if(!guild) {
-      await APIGuild.createGuild(member.guild.id)
+      await Guild.add({
+        guildid: member.guild.id
+      } as any)
       return this.isHavingPermission(member, PermissionsBitField.Flags.Administrator);
     };
 
     if(guildfetched?.ownerId == member.id) return true
     if(this.isHavingPermission(member, PermissionsBitField.Flags.Administrator)) return true;
-    if(guild.adminRoles.length <= 0 || !guild.adminRoles) return false;
+    if(r.length <= 0 || !r) return false;
 
     let hasRole = false;
 
-    guild.adminRoles.forEach(role => {
+    r.forEach(role => {
       if(hasRole) return true
       const test = member.roles.cache.has(role)
       if(test) hasRole = true

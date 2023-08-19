@@ -1,0 +1,76 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "./gen/mongo"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Infraction {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  type         String
+  user         String
+  author       String
+  guild        String
+  reason       String?
+  creationdate DateTime
+  timeuntil    Int?
+  deleted      Boolean?
+}
+
+model UserAction {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  type         Int
+  user         String
+  target       String?
+  creationdate DateTime
+  data         Json?
+}
+
+model User {
+  id      String   @id @default(auto()) @map("_id") @db.ObjectId
+  userid  String   @unique
+  points  Int
+  blocked Boolean?
+}
+
+model ApiUser {
+  id   String @id @default(auto()) @map("_id") @db.ObjectId
+  role String
+}
+
+model Guild {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  guildid       String   @unique
+  adminRoles    String[]
+  alertChannel  String?
+  specialRole   String?
+  preferedLang  String?
+  appealChannel String?
+}
+
+model ApiAction {
+  id        String @id @default(auto()) @map("_id") @db.ObjectId
+  method    String
+  ip        String
+  apiUserId String
+  path      String
+  data      Json?
+}
+
+model InfractionAppeal {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  infid        String   @db.ObjectId
+  dmchannel    String
+  dmmessageid  String
+  author       String
+  guild        String
+  reason       String?
+  type         String
+  creationdate DateTime
+}

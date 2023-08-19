@@ -4,7 +4,9 @@ import { ErrorModel } from "../models.js";
 import { Database } from "../../db.js";
 import { ObjectId } from "bson";
 import jwt from "jsonwebtoken"
-import { ApiUser } from "@prisma/client";
+import { DBApiUser } from "../../db/connector.js";
+import { RumcajsId } from "../../misc/id.js";
+import { ApiUser } from "../../controllers/apiuser.js";
 
 export class APIUser {
   @Route({
@@ -36,12 +38,9 @@ export class APIUser {
   async createApiUser(req: Request, res: Response) {
     if(req["user"]["role"] != "admin") return res.status(403).json({code: 5, message: "Not admin"})
     if(!req.body.role) return res.status(400).json({code: 6, message: "no role?"})
-    const user = await Database.Db.apiUser.create({
-      data: {
-        id: new ObjectId().toString(),
-        role: req.body.role
-      }
-    }).catch(() => {
+    const user = await ApiUser.add({
+      role: req.body.role
+    } as DBApiUser).catch(() => {
       res.status(500)
         .json({
           message: "Internal server error"
@@ -49,7 +48,7 @@ export class APIUser {
     })
 
     const token = jwt.sign({
-      id: (await user as ApiUser).id
+      id: (await user as DBApiUser).id
     }, process.env.API_SECRET!)
 
     res.status(200).json({...user, token: token})

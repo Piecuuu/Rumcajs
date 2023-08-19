@@ -10,6 +10,8 @@ import { PermissionsCheck } from "../misc/permcheck.js";
 import { InfractionType } from "../types.js";
 import { Translation } from "../handlers/lang.js";
 import { NotAdmin } from "../guards/NotAdmin.js";
+import { RumcajsId } from "../misc/id.js";
+import { AppealHandler } from "../handlers/appealHandler.js";
 
 @Discord()
 class Kick {
@@ -33,6 +35,13 @@ class Kick {
       required: false
     })
     reason: string,
+    @SlashOption({
+      name: "ephemeral",
+      description: "Ephemeral (silent)",
+      type: ApplicationCommandOptionType.Boolean,
+      required: false
+    })
+    ephemeral: boolean,
 
     interaction: ChatInputCommandInteraction
   ) {
@@ -87,16 +96,18 @@ class Kick {
       })
     }
 
-    await interaction.deferReply();
+    await interaction.deferReply({
+      ephemeral: ephemeral ? true : false
+    });
 
     const infractionData = {
       type: InfractionType.Kick,
-      id: new ObjectId().toString(),
       author: interaction.user.id,
       guild: interaction.guild?.id!,
       reason: reason,
       user: user.id,
-      creationdate: new Date()
+      creationdate: new Date(),
+      id: RumcajsId.generateId()
     }
 
     await Database.Db.infraction.create({
@@ -112,16 +123,27 @@ class Kick {
       dmembed.setDescription((await (await dmembed.translation).get("dm.kick"))
         .replace("{SERVERNAME}", interaction.guild?.name!)
 
-      + (reason ? (await (await dmembed.translation).get("common.dm.for-reason"))
-        .replace("{REASON}", reason) : ""))
+        + (reason ? (await (await dmembed.translation).get("common.dm.for-reason"))
+          .replace("{REASON}", reason) : ""))
+      dmembed.setFooter({
+        text: out.id
+      });
 
-      await user.send({
-        embeds: [dmembed]
-      }).catch(() => {})
+      const comp = await AppealHandler.createAppealActionRow(interaction.guildId!);
+      if(comp != null) {
+        await user.send({
+          embeds: [dmembed],
+          components: [comp]
+        }).catch(() => {})
+      } else {
+        await user.send({
+          embeds: [dmembed]
+        }).catch(() => {})
+      }
 
       try {
         member.kick(reason).then(() => {
-          infractionEmitter.emit("send", infractionData)
+          infractionEmitter.emit("send", out)
         })
       } catch(err) {
         logger.error(err)

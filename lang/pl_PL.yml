@@ -25,6 +25,15 @@ cmd.infraction.list.footer-infractions: " | Naruszenia: {TOTALINFRACTIONS}"
 cmd.infraction.list.footer-warns: " | Ostrzeżenia: {TOTALWARNS}"
 cmd.infraction.list.desc-infraction: "**Typ:** {INFRACTIONTYPE}\n**ID:** `{ID}`\n**Moderator:** <@{MODERATOR}>\n**Powód:** {REASON}\n**Data utworzenia:** {CREATIONDATE}"
 
+#cmd.infraction.get.desc-infraction: "**Typ:** `{INFRACTIONTYPE}`\n**ID:** `{ID}`\n**Użytkownik:** <@{TARGET}>\n**Moderator:** <@{MODERATOR}>\n**Powód:** {REASON}\n**Data utworzenia:** {CREATIONDATE}"
+cmd.infraction.get.field.user: "Użytkownik"
+cmd.infraction.get.field.moderator: "Moderator"
+cmd.infraction.get.field.type: "Typ"
+cmd.infraction.get.field.id: "ID"
+cmd.infraction.get.field.credate: "Data utworzenia"
+cmd.infraction.get.field.reason: "Powód"
+cmd.infraction.get.field.time: "Czas"
+
 none-word: "*Brak*"
 
 cmd.clear.error.limit: "Podana liczba wiadomości do usunięcia jest większa niż 100.\nPrzez limit w *API Discorda*, nie moge usunąć więcej niż 100 wiadomości na raz."
@@ -38,6 +47,7 @@ common.error.time-too-long: "Za długi czas.\n*Maksymalnie 27 dni.*"
 common.error.time-unit-invalid: "Podano nieprawidłową jednostke czasu: `{UNIT}`\n*Przykładowe użycie*: `1w 10d 3h 30m`"
 common.error.time-duration-not-positive: "Czas musi być pozytywny."
 common.error.guild-not-set-up: "Ten serwer nie został jeszcze ustawiony.\n*Ustaw go używając:* {CMDMENTION}" #
+common.error.number-negative: "Nie można przetworzyć negatynego numeru."
 
 infraction.neutral.embed.title.member-kicked: "Użytkownik Wyrzucony"
 infraction.neutral.embed.title.member-muted: "Użytkownik Wyciszony"
@@ -50,6 +60,11 @@ infraction.neutral.embed.fields.moderator: "Moderator"
 infraction.neutral.embed.fields.reason: "Powód"
 infraction.success.removed-infraction: "Pomyślnie usunięto naruszenie."
 
+infraction.dm.appeal.button: "Aplelacja"
+infraction.dm.appeal.sent: "Wysłano"
+infraction.appeal.reason: "Powód"
+infraction.appeal.embed.title: "Aplelacja"
+
 cmd.ban.banned: "***{USER} został zbanowany***"
 cmd.ban.not-punishable: "Nie można zbanować tego użytkownika!"
 
@@ -61,6 +76,9 @@ cmd.mute.not-punishable: "Nie można wyciszyć tego użytkownika!"
 
 cmd.warn.warned: "***{USER} został ostrzeżony***"
 
+cmd.unmute.unmuted: "***{USER} został odciszony***" #
+cmd.unmute.error: "Nie moge odciszyć tego użytkownika." #
+
 cmd.config.modrole.add.error.max-modrole-reached: "Osiągnąłeś limit rół moderacyjnych."
 cmd.config.modrole.add.error.modrole-already-added: "Dodałeś role jako moderator."
 cmd.config.modrole.add.success.modrole-added: "Dodano {ROLE} jako moderator" #
@@ -68,13 +86,16 @@ cmd.config.modrole.remove.error.modrole-not-existent: "Ta rola to nie moderator.
 cmd.config.modrole.remove.success.modrole-removed: "Usunięto {ROLE} z moderatorów." #
 
 cmd.config.specialrole.edit.success.specialrole-added: "Ustawiono {ROLE} jako specjalną role." #
-cmd.config.specialrole.clear.success.specialrole-cleared: "Wyczyszczone specjalną role." #
+cmd.config.specialrole.clear.success.specialrole-cleared: "Wyczyszczono specjalną role." #
 
 cmd.config.alertchannel.set.success.alertchannel-set: "Ustawiono {CHANNEL} jako informacyjny kanał ." #
-cmd.config.alertchannel.clear.success.alertchannel-cleared: "Wyczyszczone informacyjny kanał." #
+cmd.config.alertchannel.clear.success.alertchannel-cleared: "Wyczyszczono informacyjny kanał." #
 
 cmd.config.setup.error.guild-exists: "Ten serwer jest już ustawiony." #
 cmd.config.setup.success: "Pomyślnie ustawiono serwer ." #
+
+cmd.config.appealchannel.set.success.appealchannel-set: "Ustawiono {CHANNEL} jako kanał na który zostaną wysłane prośby o apelacje."
+cmd.config.appealchannel.clear.success.appealchannel-cleared: "Wyczyszczono kanał do apelacji."
 
 cmd.config.language: "Aby ustawić język, zareaguj flagą twojego państwa na wiadmomość poniżej."
 cmd.config.language.react-here: "Zareaguj na tą wiadomość aby ustawić język"

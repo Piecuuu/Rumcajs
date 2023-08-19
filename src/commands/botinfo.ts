@@ -1,17 +1,18 @@
-import { EmbedBuilder } from "@discordjs/builders";
-import { CommandInteraction, Embed, EmbedField } from "discord.js";
+import { CommandInteraction } from "discord.js";
 import { Discord, Slash } from "discordx";
-import { Colors, logger } from "../config.js";
-import { creators } from "../types.js"
-import * as os from "os"
 import getOs from 'getos';
+import * as os from "os";
+import { logger } from "../config.js";
 //const { getOs } = pkg;
 import osName from "os-name";
-import { Format } from "../misc/format.js";
 import { SuccessEmbed } from "../misc/embeds.js";
+import { Format } from "../misc/format.js";
+import { readFile } from "fs/promises"
 let finished = false
 @Discord()
 class botInfo {
+  //! This command gives crucial information that can be exploited by hackers.
+  //! Oh well...
   @Slash({
     name: "botinfo",
     description: "Displays info of the bot",
@@ -39,12 +40,12 @@ class botInfo {
           name: "OS",
           value: "\`" + info.osn + "\`",
           inline: true
-        },
+        }/* ,
         {
           name: "OS release",
           value: `\`${info.ver}\``,
           inline: true
-        }
+        } */
       ])
       .setFooter({
         text: `Uptime ${Format.secondsToHms(info.uptime)}`
@@ -62,7 +63,7 @@ class botInfo {
           },
           {
             name: "Distro",
-            value: `\`${dist.dist + " " + dist.release}\``,
+            value: `\`${await getDistro()/* + " " + dist.release ?? ""*/}\``,
             inline: true
           }
         ])
@@ -84,6 +85,9 @@ class botInfo {
           },
         ])
         finished = true
+        await interaction.editReply({
+          embeds: [embed]
+        })
       })
     } else {
       embed.addFields([
@@ -104,9 +108,12 @@ class botInfo {
         },
       ])
       finished = true
+      await interaction.editReply({
+        embeds: [embed]
+      })
     }
 
-    const a = async (emb: EmbedBuilder) => {
+    /* const a = async (emb: EmbedBuilder) => {
       if(!finished) {
         setTimeout(() => {
           a(emb)
@@ -114,25 +121,15 @@ class botInfo {
       } else {
         ret(emb)
       }
-    }
+    } */
 
-    const ret = async (emb: EmbedBuilder) => {
-      /* emb.addFields([
-        {
-          name: "Twórcy",
-          value: "_ _",
-          inline: false
-        }
-      ])
-
-      emb.addFields(getCreators(Creators)) */
-      //logger.debug("sent")
+    /* const ret = async (emb: EmbedBuilder) => {
       await interaction.editReply({
         embeds: [emb]
       })
-    }
+    } */
 
-    a(embed)
+    /* a(embed) */
   }
 }
 
@@ -225,4 +222,23 @@ interface getOS {
   dist: string,
   codename: string,
   release: string
+}
+
+type OSReleaseFile = {
+  [key: string]: string
+}
+
+async function getDistro() {
+  const file = await readFile("/etc/os-release")
+
+  let obj: OSReleaseFile = {};
+
+  file.toString().split("\n").forEach((val) => {
+    if(!val) return;
+    const pair = val.split("=")
+    const unquoted = pair[1].replaceAll("\"", "")
+    obj[pair[0]] = unquoted;
+  })
+
+  return obj["PRETTY_NAME"];
 }

@@ -42,9 +42,12 @@ export const GuildExists: GuardFunction<
     const e = new ErrorEmbed(interaction.guild?.id!)
     e.setDescription((await (await e.translation).get("common.error.guild-not-set-up"))
       .replace("{CMDMENTION}", `</configuration setup:${slc?.first()?.id ?? "`/configuration setup`"}>`)) //(await client.application?.commands.cache.get("configuration"))?.id
+    if(interaction.replied) return await interaction.editReply({
+      embeds: [e]
+    }).catch(() => {})
     return await interaction.reply({
       embeds: [e]
-    })
+    }).catch(() => {})
   } else {
     await next()
   }

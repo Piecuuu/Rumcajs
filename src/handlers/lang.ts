@@ -1,13 +1,11 @@
-import * as fs from 'fs/promises';
-import yaml from 'yaml';
-import { Database } from '../db.js';
-import { logger } from '../config.js';
-import { Logger } from '../logger.js';
-import path from "path"
-import { Bot } from '../bot.js';
 import { Guild } from 'discord.js';
-import { APIGuild } from '../api/routes/guild.js';
-import { ObjectId } from 'bson';
+import * as fs from 'fs/promises';
+import path from "path";
+import yaml from 'yaml';
+import { Bot } from '../bot.js';
+import { logger } from '../config.js';
+import { Database } from '../db.js';
+import { Logger } from '../logger.js';
 
 export type TranslationMap = Record<string, string>;
 
@@ -108,6 +106,11 @@ export class Translation {
     return languageCode;
   }
 
+  /**
+   * @deprecated Probably doesn't work, don't use
+   * @param code Language code
+   * @returns Region code
+   */
   static convertLanguageRegionCode(code: string): string {
     if (code.includes('_')) return code;
     if (code.includes('-')) return code.replace("-", "_");
@@ -125,5 +128,5 @@ export class Translation {
 export enum LanguageFlags {
   "🇵🇱" = "pl_PL",
   "🇺🇸" = "en_US",
-  "🇺🇦" = "ru_UA"
+  "🇺🇦" = "ru_UA",
 }

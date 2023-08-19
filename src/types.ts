@@ -13,3 +13,15 @@ export enum InfractionType {
   Kick = "kick",
   Ban = "ban"
 }
+
+export enum UserActions {
+  Unmute = 0,
+  Clear = 1,
+  InfractionRemove = 2
+}
+
+export interface DBSettings {
+  provider: DBProvider
+}
+
+export type DBProvider = "mysql" | "postgresql" | "sqlite" | "mongodb";

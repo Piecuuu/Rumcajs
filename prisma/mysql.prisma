@@ -1,0 +1,76 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "./gen/mysql"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Infraction {
+  id           String   @id
+  type         String
+  user         String
+  author       String
+  guild        String
+  reason       String?
+  creationdate DateTime
+  timeuntil    Int?
+  deleted      Boolean?
+}
+
+model UserAction {
+  id           String   @id
+  type         Int
+  user         String
+  target       String?
+  creationdate DateTime
+  data         Json?
+}
+
+model User {
+  id      String   @id
+  userid  String   @unique
+  points  Int
+  blocked Boolean? @default(false)
+}
+
+model ApiUser {
+  id   String @id
+  role String
+}
+
+model Guild {
+  id            String  @id
+  guildid       String  @unique
+  adminRoles    String
+  alertChannel  String?
+  specialRole   String?
+  preferedLang  String?
+  appealChannel String?
+}
+
+model ApiAction {
+  id        String @id
+  method    String
+  ip        String
+  apiUserId String
+  path      String
+  data      Json?
+}
+
+model InfractionAppeal {
+  id           String   @id
+  infid        String
+  dmchannel    String
+  dmmessageid  String
+  author       String
+  guild        String
+  reason       String?
+  type         String
+  creationdate DateTime
+}

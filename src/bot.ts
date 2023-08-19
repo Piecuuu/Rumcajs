@@ -18,7 +18,8 @@ export class Bot {
         IntentsBitField.Flags.GuildIntegrations,
         IntentsBitField.Flags.GuildModeration,
         IntentsBitField.Flags.GuildMembers,
-        IntentsBitField.Flags.GuildMessageReactions
+        IntentsBitField.Flags.GuildMessageReactions,
+        IntentsBitField.Flags.AutoModerationExecution
       ],
       botGuilds: [(client) => client.guilds.cache.map((guild) => guild.id)],
       presence: {

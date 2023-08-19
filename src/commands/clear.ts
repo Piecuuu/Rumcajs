@@ -1,9 +1,14 @@
+import { ObjectId } from "bson";
 import { ApplicationCommandOptionType, BaseGuildTextChannel, ChannelType, ChatInputCommandInteraction, GuildMember, PermissionFlagsBits } from "discord.js";
 import { Discord, Slash, SlashOption } from "discordx";
-import { logger } from "../config.js";
+import { Bot } from "../bot.js";
+import { dbSettings, logger } from "../config.js";
+import { Database } from "../db.js";
 import { ErrorEmbed, SuccessEmbed, memberNoPermsEmbed, noPermissionsEmbed } from "../misc/embeds.js";
 import { PermissionsCheck } from "../misc/permcheck.js";
-import { Bot } from "../bot.js";
+import { UserActions } from "../types.js";
+import { RumcajsId } from "../misc/id.js";
+import { DBUserAction } from "../db/connector.js";
 
 @Discord()
 class clearCommand {
@@ -41,6 +46,15 @@ class clearCommand {
       })
     }
 
+    if(amount <= 0) {
+      const e = new ErrorEmbed(interaction.guild?.id!)
+      e.setDescription(await (await e.translation).get("common.error.number-negative"), true);
+      return await interaction.reply({
+        embeds: [e],
+        ephemeral: true
+      })
+    }
+
     if((!interaction.channel) || interaction.channel.type == ChannelType.DM) {
       const e = new ErrorEmbed(interaction.guild?.id!)
       e.setDescription(await (await e.translation).get("cmd.clear.nonexistent-channel"), true);
@@ -60,8 +74,10 @@ class clearCommand {
       })
     }
 
+    await interaction.deferReply()
+
     if(!PermissionsCheck.isHavingPermission((await interaction.guild?.members.fetch(Bot.Client.user?.id!) as GuildMember), PermissionFlagsBits.ManageMessages)) {
-      return await interaction.reply({
+      return await interaction.editReply({
         embeds: [await noPermissionsEmbed(PermissionFlagsBits.ManageMessages, interaction.guild?.id!)]
       })
     }
@@ -82,20 +98,47 @@ class clearCommand {
         })
       })
 
-      await interaction.reply({
+      await interaction.editReply({
         embeds: [e]
-      });
+      }).then(() => {
+        (channel ? channel : interaction.channel as BaseGuildTextChannel).bulkDelete(amount).then(async () => {
+          const data = {
+            data: {
+              creationdate: new Date(),
+              type: UserActions.Clear,
+              user: interaction.user.id,
+              data: {
+                amount: amount,
+                channel: channel ? channel.id : interaction.channelId
+              },
+              id: RumcajsId.generateId()
+            }
+          }
+          const sqlited = {
+            data: {
+              creationdate: new Date(),
+              type: UserActions.Clear,
+              user: interaction.user.id,
+              data: JSON.stringify({
+                amount: amount,
+                channel: channel ? channel.id : interaction.channelId
+              }),
+              id: RumcajsId.generateId()
+            }
+          }
 
-      (channel ? channel : interaction.channel as BaseGuildTextChannel).bulkDelete(amount).then(async () => {
-        await interaction.channel?.send({
-          embeds: [e]
+          await Database.Db.userAction.create(((dbSettings.provider == "sqlite") ? sqlited : data) as any).catch(() => {})
+
+          channel ?? await interaction.channel?.send({
+            embeds: [e]
+          })
         })
-      })
+      });
     } catch(err) {
       logger.error(err as string)
       const e = new ErrorEmbed(interaction.guild?.id!)
       e.setDescription(await (await e.translation).get("error.unknown-error"), true);
-      await interaction.reply({
+      await interaction.editReply({
         embeds: [e]
       })
     }

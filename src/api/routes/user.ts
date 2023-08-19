@@ -1,10 +1,12 @@
-import { User as DBUser } from "@prisma/client";
 import { ObjectId } from "bson";
 import { Request, Response } from "express";
 import { Database } from "../../db.js";
 import { servererror } from "../apimessg.js";
 import Route from "../decorator.js";
 import { Logger } from "../../logger.js";
+import { Bot } from "../../bot.js";
+import DBConnector, { DBUser } from "../../db/connector.js";
+import { RumcajsId } from "../../misc/id.js";
 
 export class User {
   @Route({
@@ -123,6 +125,38 @@ export class User {
     res.status(200).json(duser)
   }
 
+  @Route({
+    method: "get",
+    path: "/top/:limit"
+  })
+  async getTop(req: Request, res: Response) {
+    if(!req.params.limit) return res.status(400).json({code: 6969, message: "no limit?"})
+    const top = await Database.Db.user.findMany({
+      orderBy: {
+        points: "desc"
+      },
+      where: {
+        NOT: {
+          OR: [
+            {
+              points: {
+                equals: 0
+              }
+            },
+            {
+              userid: {
+                equals: Bot.Client.user?.id
+              }
+            }
+          ]
+        }
+      },
+      take: parseInt(req.params.limit)
+    })
+
+    res.status(200).json(top)
+  }
+
   static async getUser(id: string) {
     return await Database.Db.user.findUnique({
       where: {
@@ -156,7 +190,7 @@ export class User {
       data: {
         points: 0,
         userid: userId,
-        id: new ObjectId().toString()
+        id: RumcajsId.generateId()
       }
     }).catch(() => {})
   }
@@ -178,7 +212,7 @@ export class User {
       data: {
         points: 0,
         userid: userId,
-        id: new ObjectId().toString()
+        id: RumcajsId.generateId()
       }
     }).catch(() => {})
   }
@@ -188,7 +222,7 @@ export class User {
       where: {
         userid: userId
       }
-    }) != 0) return
+    }) == 0) return
 
     return await Database.Db.user.update({
       where: {

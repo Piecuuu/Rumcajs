@@ -20,13 +20,13 @@ class readyEvent {
           update: true
         }
       },*/
-      global: {
+      /*global: {
         disable: {
           add: true,
           delete: true,
           update: true
         }
-      },
+      },*/
     }).then(() => {
       logger.debug("Done registering commands!")
     })
