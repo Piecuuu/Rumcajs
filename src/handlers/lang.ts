@@ -128,5 +128,8 @@ export class Translation {
 export enum LanguageFlags {
   "🇵🇱" = "pl_PL",
   "🇺🇸" = "en_US",
+  "🇦🇺" = "en_US",
+  "🇬🇧" = "en_US",
+  "🇨🇦" = "en_US",
   "🇺🇦" = "ru_UA",
 }

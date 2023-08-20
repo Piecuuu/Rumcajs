@@ -384,7 +384,8 @@ class Config {
         .then(async () => {
           const langSetEmbed = new SuccessEmbed(interaction.guild?.id)
           langSetEmbed.setDescription((await (await langSetEmbed.translation).get("cmd.config.language.set"))
-            .replace("{FLAG}", await (await langSetEmbed.translation).get("flag")))
+            .replace("{FLAG}", reaction.emoji.name!))
+          // await (await langSetEmbed.translation).get("flag")
 
           await message?.reply({
             embeds: [langSetEmbed]
