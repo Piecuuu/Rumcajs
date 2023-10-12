@@ -135,7 +135,7 @@ export class AppealHandler {
         },
         {
           name: await (await embed.translation).get("cmd.infraction.get.field.credate"),
-          value: `<t:${Math.floor(appeal.creationdate.getTime() / 1000)}:f>`,
+          value: `<t:${Math.floor(infraction.creationdate.getTime() / 1000)}:f>`,
           inline: true
         },
         {
