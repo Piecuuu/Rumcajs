@@ -46,7 +46,7 @@ class Infractions {
         }
       }
     })
-    const filtered = infractions.filter(infraction => (!infraction.deleted))
+    const filtered = infractions.filter(infraction => (!infraction.deleted)).reverse();
     if(filtered.length <= 0) {
       const e = new NeutralEmbed(interaction.guild?.id!)
       e.setDescription(await (await e.translation).get("cmd.infraction.list.no-infractions"))
