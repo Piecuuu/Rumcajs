@@ -2,7 +2,6 @@ import { dbSettings, isDebug, logger } from "./config.js";
 import { exitHandler } from "./index.js";
 import { DBProvider } from "./types.js";
 import DBConnector from "./db/connector";
-import { PrismaClientOptions } from "@prisma/client/runtime/index.js";
 
 export class Database {
   private static _db: DBConnector
@@ -12,7 +11,7 @@ export class Database {
   }
 
   static async start() {
-    const dbOpt: PrismaClientOptions | undefined = isDebug ? {
+    const dbOpt = isDebug ? {
       log: [
         {
           emit: "stdout",
