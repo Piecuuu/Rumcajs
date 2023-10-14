@@ -3,11 +3,12 @@ import { dbSettings } from "../config.js";
 import { ObjectId } from "bson";
 
 export class RumcajsId {
+  public static idLength = dbSettings.provider == "mongodb" ? new ObjectId().toString().length : 12;
   private static alphabet = "0123456789abcdefghik";
-  private static nnid = customAlphabet(this.alphabet, 12);
+  private static nnid = customAlphabet(this.alphabet, this.idLength);
 
   static generateId(): string {
-    let id: string = "";
+    let id: string;
     switch(dbSettings.provider) {
       case "mysql":
       case "postgresql":
@@ -28,7 +29,7 @@ export class RumcajsId {
       case "mysql":
       case "sqlite":
       case "postgresql":
-        if(id.length != 12 && /^[a-k0-9]*$/.test(id)) return false
+        if(id.length != this.idLength && /^[a-k0-9]*$/.test(id)) return false
         break
 
       case "mongodb":
