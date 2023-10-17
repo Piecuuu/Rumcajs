@@ -62,7 +62,7 @@ class Avatar {
       }) ?? user.user.defaultAvatarURL
 
       emb.setAuthor({
-        name: user.tag,
+        name: user.discriminator == "0" ? user.username : user.tag, // Check if the user still has the "old" style tag (name+discrim.)
         iconURL: avatars.webp
       })
 
