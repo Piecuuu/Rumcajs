@@ -65,6 +65,8 @@ infraction.dm.appeal.sent: "Wysłano"
 infraction.appeal.reason: "Powód"
 infraction.appeal.embed.title: "Aplelacja"
 
+infraction.appeal.button.block: "Zablokuj"
+
 cmd.ban.banned: "***{USER} został zbanowany***"
 cmd.ban.not-punishable: "Nie można zbanować tego użytkownika!"
 

@@ -65,6 +65,8 @@ infraction.dm.appeal.sent: "Sent"
 infraction.appeal.reason: "Reason"
 infraction.appeal.embed.title: "Appeal"
 
+infraction.appeal.button.block: "Block"
+
 cmd.ban.banned: "***{USER} has been banned***"
 cmd.ban.not-punishable: "Member not bannable!"
 

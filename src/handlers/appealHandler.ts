@@ -1,12 +1,13 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, DMChannel, InteractionType, ModalBuilder, TextChannel, TextInputBuilder, TextInputStyle } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, DMChannel, GuildMember, InteractionType, ModalBuilder, ModalSubmitInteraction, TextChannel, TextInputBuilder, TextInputStyle } from "discord.js";
 import { ArgsOf, ButtonComponent, Discord, On } from "discordx";
 import { Bot } from "../bot.js";
 import { Database } from "../db.js";
 import { DBInfraction, DBInfractionAppeal } from "../db/connector.js";
-import { NeutralEmbed } from "../misc/embeds.js";
+import { NeutralEmbed, userNotAdminEmbed } from "../misc/embeds.js";
 import { RumcajsId } from "../misc/id.js";
 import { Translation } from "./lang.js";
 import { EventEmitter } from "events";
+import { PermissionsCheck } from "../misc/permcheck.js";
 
 @Discord()
 export class AppealHandler {
@@ -21,19 +22,31 @@ export class AppealHandler {
         id: id
       }
     })
-    const deletedmsg = await ((await (new Translation()).init((await Translation.getGuildLangCode(infraction?.guild!)))).get("common.error.invalid-object-id"));
+    const isBlocked = (await Database.Db.userBlockedGuild.findUnique({
+      where: {
+        userId: interaction.user.id,
+        guildId: infraction?.guild
+      },
+      select: {
+        blocked: true
+      }
+    }))?.blocked;
+    const translation = (await (new Translation()).init((await Translation.getGuildLangCode(infraction?.guild!))));
+    if(isBlocked) {
+      return await interaction.reply(await translation.get("infraction.appeal.error.user-blocked"))
+    }
     if(!RumcajsId.isValid(id)) {
       return interaction.reply({
-        content: deletedmsg
+        content: await translation.get("common.error.invalid-object-id")
       });
     }
     if(infraction?.deleted) {
       return interaction.reply({
-        content: deletedmsg
+        content: await translation.get("common.error.invalid-object-id")
       });
     }
     const reasontextmodal = new TextInputBuilder()
-      .setLabel(await ((await (new Translation()).init((await Translation.getGuildLangCode(infraction?.guild!)))).get("infraction.appeal.reason")))
+      .setLabel(await translation.get("infraction.appeal.reason"))
       .setCustomId("reason")
       .setRequired(true)
       .setStyle(TextInputStyle.Paragraph)
@@ -75,39 +88,70 @@ export class AppealHandler {
   async appealModal(
     [interaction]: ArgsOf<"interactionCreate">
   ) {
-    if(interaction.type != InteractionType.ModalSubmit) return;
-    if(interaction.customId.substring(0, 11) !== "appealmodal") return;
-    const id = interaction.customId.substring(11, 11+12);
-    const mid = interaction.customId.substring(11+12, 11+12+19);
-    const message = await (await Bot.Client.channels.fetch(interaction.channelId!) as DMChannel).messages.fetch(mid);
-    const infraction = await Database.Db.infraction.findUnique({
-      where: {
-        id: id
+    const appealModalStr = "appealmodal";
+    const appealModalStrLen = appealModalStr.length;
+    const idAndappealModelLen = appealModalStrLen+RumcajsId.length;
+
+    interaction = interaction as ButtonInteraction | ModalSubmitInteraction
+
+    const split = interaction.customId.split("_");
+
+    if(interaction.customId.substring(0, appealModalStrLen) === appealModalStr) {
+      if(interaction.type != InteractionType.ModalSubmit) return;
+      const id = interaction.customId.substring(appealModalStrLen, idAndappealModelLen); // I'm fucking dumb, I just realized i can just split("_") everything and it would be easier...
+      const mid = interaction.customId.substring(idAndappealModelLen, idAndappealModelLen+19);
+      const message = await (await Bot.Client.channels.fetch(interaction.channelId!) as DMChannel).messages.fetch(mid);
+      const infraction = await Database.Db.infraction.findUnique({
+        where: {
+          id: id
+        }
+      })
+      const ifap = await Database.Db.infractionAppeal.create({
+        data: {
+          author: interaction.user.id,
+          guild: infraction?.guild!,
+          infid: infraction?.id!,
+          reason: interaction.fields.getTextInputValue("reason"),
+          type: infraction?.type!,
+          dmchannel: interaction.channelId!,
+          dmmessageid: mid,
+          id: RumcajsId.generateId(),
+          creationdate: new Date()
+        }
+      });
+      const newbtn = await AppealHandler.createAppealActionRow(infraction?.guild!);
+      if(newbtn === null) return;
+      newbtn.components[0].setDisabled(true);
+      await message?.edit({
+        components: [newbtn]
+      })
+      await interaction.reply({
+        content: await (await (new Translation()).init(await Translation.getGuildLangCode(infraction?.guild!))).get("infraction.dm.appeal.sent")
+      })
+      this.sendToAdmins(ifap, infraction!);
+    } else if(split[0] === "block") {
+      if(!(await PermissionsCheck.isAdmin(interaction.member as GuildMember))) {
+        return await interaction.reply({
+          embeds: [await userNotAdminEmbed(interaction.guild?.id!)]
+        })
       }
-    })
-    const ifap = await Database.Db.infractionAppeal.create({
-      data: {
-        author: interaction.user.id,
-        guild: infraction?.guild!,
-        infid: infraction?.id!,
-        reason: interaction.fields.getTextInputValue("reason"),
-        type: infraction?.type!,
-        dmchannel: interaction.channelId!,
-        dmmessageid: mid,
-        id: RumcajsId.generateId(),
-        creationdate: new Date()
-      }
-    });
-    const newbtn = await AppealHandler.createAppealActionRow(infraction?.guild!);
-    if(newbtn === null) return;
-    newbtn.components[0].setDisabled(true);
-    await message?.edit({
-      components: [newbtn]
-    })
-    await interaction.reply({
-      content: await (await (new Translation()).init(await Translation.getGuildLangCode(infraction?.guild!))).get("infraction.dm.appeal.sent")
-    })
-    this.sendToAdmins(ifap, infraction!);
+      const id = split[1];
+      const appeal = await Database.Db.infractionAppeal.findUnique({
+        where: {
+          id: id
+        }
+      });
+
+      Database.Db.userBlockedGuild.create({
+        data: {
+          id: RumcajsId.generateId(),
+          authorId: interaction.user.id,
+          guildId: interaction.guildId!,
+          userId: appeal?.author!,
+          blocked: true
+        }
+      });
+    }
   }
 
   async sendToAdmins(appeal: DBInfractionAppeal, infraction: DBInfraction) {
@@ -149,8 +193,16 @@ export class AppealHandler {
           inline: false
         }
       ])
+
+    const button = new ButtonBuilder()
+      .setLabel(await (await embed.translation).get(""))
+
+    const actionRow = new ActionRowBuilder<ButtonBuilder>()
+      .addComponents(button)
+
     appealChannel.send({
-      embeds: [embed]
+      embeds: [embed],
+      components: [actionRow],
     }).catch(() => {});
   }
 }
