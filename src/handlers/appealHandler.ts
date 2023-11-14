@@ -88,11 +88,13 @@ export class AppealHandler {
   async appealModal(
     [interaction]: ArgsOf<"interactionCreate">
   ) {
+    if(!(interaction.type == InteractionType.MessageComponent || interaction.type == InteractionType.ModalSubmit)) return;
+
     const appealModalStr = "appealmodal";
     const appealModalStrLen = appealModalStr.length;
     const idAndappealModelLen = appealModalStrLen+RumcajsId.length;
 
-    interaction = interaction as ButtonInteraction | ModalSubmitInteraction
+    interaction = interaction as unknown as ButtonInteraction | ModalSubmitInteraction
 
     const split = interaction.customId.split("_");
 
