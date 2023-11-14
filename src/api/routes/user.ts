@@ -68,13 +68,14 @@ export class User {
 
   @Route({
     method: "get",
-    path: "/dusers/:id/points"
+    path: "/dusers/:guildid/:id/points"
   })
   async getDUserPoints(req: Request, res: Response) {
     if(!req.params.id) return res.status(400).json({code: 9, message: "no userid"})
-    const duser = await Database.Db.user.findUnique({
+    const duser = await Database.Db.member.findUnique({
       where: {
-        userid: req.params.id
+        userId: req.params.id,
+        guildId: req.params.guildid
       },
       select: {
         points: true
@@ -88,12 +89,12 @@ export class User {
   }
   @Route({
     method: "patch",
-    path: "/dusers/:id/points"
+    path: "/dusers/:guildid/:id/points"
   })
   async updateDUserPoints(req: Request, res: Response) {
     if(!req.params.id) return res.status(400).json({code: 9, message: "no userid"})
     if(req.body.points == null || req.body.points == undefined) return res.status(400).json({code: 10, message: "no points in body"})
-    const duser = await User.updateUserPoints(req.params.id, req.body.points).catch(() => {
+    const duser = await User.updateUserPoints(req.params.id, req.params.guildid, req.body.points).catch(() => {
       res.status(404).json({code: 7, message: "Didnt register user yet"})
     })
     res.status(200).json(duser)
@@ -127,11 +128,11 @@ export class User {
 
   @Route({
     method: "get",
-    path: "/top/:limit"
+    path: "/top/:guildid/:limit"
   })
   async getTop(req: Request, res: Response) {
     if(!req.params.limit) return res.status(400).json({code: 6969, message: "no limit?"})
-    const top = await Database.Db.user.findMany({
+    const top = await Database.Db.member.findMany({
       orderBy: {
         points: "desc"
       },
@@ -144,11 +145,14 @@ export class User {
               }
             },
             {
-              userid: {
+              userId: {
                 equals: Bot.Client.user?.id
               }
             }
           ]
+        },
+        guildId: {
+          equals: req.params.guildid
         }
       },
       take: parseInt(req.params.limit)
@@ -174,10 +178,11 @@ export class User {
     }).catch((err) => {throw new Error(err.message)})
   }
 
-  static async updateUserPoints(id: string, points: number) {
-    return await Database.Db.user.update({
+  static async updateUserPoints(userId: string, guildId: string, points: number) {
+    return await Database.Db.member.update({
       where: {
-        userid: id
+        userId: userId,
+        guildId: guildId,
       },
       data: {
         points: points
@@ -218,9 +223,10 @@ export class User {
   }
 
   static async setPoints(userId: string, guildId: string, points: number) {
-    if(await Database.Db.user.count({
+    if(await Database.Db.member.count({
       where: {
-        userid: userId
+        userId: userId,
+        guildId: guildId,
       }
     }) == 0) return
 
