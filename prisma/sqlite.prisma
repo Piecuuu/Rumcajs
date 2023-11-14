@@ -37,22 +37,21 @@ model User {
   userid  String   @unique
   points  Int
   blocked Boolean? @default(false)
-  blockedGuilds UserBlockedGuild[] @relation("user")
-  blockAuthor   UserBlockedGuild[] @relation("author")
+  member        Member[] @relation("user")
+  blockAuthor   Member[] @relation("author")
 }
 
-model UserBlockedGuild {
+model Member {
   id       String @id
   user     User   @relation("user", fields: [userId], references: [userid])
   userId   String @unique
   guild    Guild  @relation(fields: [guildId], references: [guildid])
   guildId  String
-  author   User   @relation("author", fields: [authorId], references: [userid])
-  authorId String
+  blockAuthor   User   @relation("author", fields: [blockAuthorId], references: [userid])
+  blockAuthorId String
   blocked  Boolean
+  points   Int @default(0)
 }
-
-
 
 model ApiUser {
   id   String @id
@@ -67,7 +66,7 @@ model Guild {
   specialRole   String?
   preferedLang  String?
   appealChannel String?
-  userBlockedGuilds UserBlockedGuild[]
+  members       Member[]
 }
 
 model ApiAction {
