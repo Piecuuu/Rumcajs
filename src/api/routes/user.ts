@@ -101,12 +101,12 @@ export class User {
 
   @Route({
     method: "patch",
-    path: "/dusers/:id/blocked"
+    path: "/dusers/:guildid/:id/blocked"
   })
   async DUserSetBlocked(req: Request, res: Response)  {
     if(!req.params.id) return res.status(400).json({code: 9, message: "no userid"})
     if(req.body.blocked == null || req.body.blocked == undefined) return res.status(400).json({code: 10, message: "no blocked in body"})
-    const duser = await User.setBlocked(req.params.id, req.body.blocked).catch(() => {
+    const duser = await User.setBlocked(req.params.id, req.params.guildid, req.body.blocked).catch(() => {
       res.status(404).json({code: 7, message: "Didnt register user yet"})
     })
     res.status(200).json(duser)
@@ -114,12 +114,12 @@ export class User {
 
   @Route({
     method: "get",
-    path: "/dusers/:id/blocked"
+    path: "/dusers/:guildid/:id/blocked"
   })
   async DUserGetBlocked(req: Request, res: Response)  {
     if(!req.params.id) return res.status(400).json({code: 9, message: "no userid"})
     if(req.body.blocked == null || req.body.blocked == undefined) return res.status(400).json({code: 10, message: "no blocked in body"})
-    const duser = await User.isBlocked(req.params.id).catch(() => {
+    const duser = await User.isBlocked(req.params.id, req.params.guildid).catch(() => {
       res.status(404).json({code: 7, message: "Didnt register user yet"})
     })
     res.status(200).json(duser)
@@ -217,16 +217,17 @@ export class User {
     }).catch(() => {})
   }
 
-  static async setPoints(userId: string, points: number) {
+  static async setPoints(userId: string, guildId: string, points: number) {
     if(await Database.Db.user.count({
       where: {
         userid: userId
       }
     }) == 0) return
 
-    return await Database.Db.user.update({
+    return await Database.Db.member.update({
       where: {
-        userid: userId
+        userId: userId,
+        guildId: guildId
       },
       data: {
         points: points
@@ -234,41 +235,53 @@ export class User {
     }).catch(() => {})
   }
 
-  static async addPoints(userId: string, points: number) {
-    const oldPoints = await Database.Db.user.findUnique({
+  static async addPoints(userId: string, guildId: string, points: number) {
+    const updated = await Database.Db.member.update({
       where: {
-        userid: userId
-      },
-      select: {
-        points: true
-      }
-    }).catch(() => {})
-
-    const updated = await Database.Db.user.update({
-      where: {
-        userid: userId
+        userId: userId,
+        guildId: guildId,
       },
       data: {
-        points: (oldPoints?.points ?? 0) + points
+        points: {
+          increment: points
+        }
       }
     }).catch(() => {})
 
     return updated
   }
 
-  static async isBlocked(userId: string) {
-    const user = await Database.Db.user.findUnique({
+  static async subPoints(userId: string, guildId: string, points: number) {
+    const updated = await Database.Db.member.update({
       where: {
-        userid: userId
+        userId: userId,
+        guildId: guildId,
+      },
+      data: {
+        points: {
+          decrement: points
+        }
+      }
+    }).catch(() => {})
+
+    return updated
+  }
+
+  static async isBlocked(userId: string, guildId: string) {
+    const user = await Database.Db.member.findUnique({
+      where: {
+        userId: userId,
+        guildId: guildId,
       }
     }).catch(() => {throw new Error()})
     return user?.blocked
   }
 
-  static async setBlocked(userId: string, blocked: boolean) {
-    const user = await Database.Db.user.update({
+  static async setBlocked(userId: string, guildId: string, blocked: boolean) {
+    const user = await Database.Db.member.update({
       where: {
-        userid: userId
+        userId: userId,
+        guildId: guildId,
       },
       data: {
         blocked: blocked

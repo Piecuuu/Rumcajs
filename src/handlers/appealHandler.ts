@@ -22,7 +22,7 @@ export class AppealHandler {
         id: id
       }
     })
-    const isBlocked = (await Database.Db.userBlockedGuild.findUnique({
+    const isBlocked = (await Database.Db.member.findUnique({
       where: {
         userId: interaction.user.id,
         guildId: infraction?.guild
@@ -142,10 +142,10 @@ export class AppealHandler {
         }
       });
 
-      Database.Db.userBlockedGuild.create({
+      Database.Db.member.create({
         data: {
           id: RumcajsId.generateId(),
-          authorId: interaction.user.id,
+          blockAuthorId: interaction.user.id,
           guildId: interaction.guildId!,
           userId: appeal?.author!,
           blocked: true

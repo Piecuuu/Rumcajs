@@ -178,8 +178,8 @@ const handleInfraction = async (infraction: DBInfraction) => {
   if(!member) return
 
 
-  if(await PermissionsCheck.isAdmin(member)) return await User.setPoints(infraction.user, ((await User.getUser(infraction.user))?.points ?? 0) - (InfractionToPoints[infraction.type] * 2))
-  await User.addPoints(infraction.author, InfractionToPoints[infraction.type])
+  if(await PermissionsCheck.isAdmin(member)) return await User.subPoints(infraction.user, infraction.guild, InfractionToPoints[infraction.type] * 2)
+  await User.subPoints(infraction.author, infraction.guild, InfractionToPoints[infraction.type])
 }
 
 /* export const addInfraction = async (infraction, user: GuildMember, guild: Guild) => {

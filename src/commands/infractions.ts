@@ -144,7 +144,7 @@ class Infractions {
       embeds: [e]
     })
 
-    await User1.setPoints(inf?.author!, (await User1.getUser(inf?.author!)!)?.points! - InfractionToPoints[inf?.type!])
+    await User1.setPoints(inf?.author!, inf?.guild!, InfractionToPoints[inf?.type!])
 
     await Database.Db.infraction.update({
       where: {
