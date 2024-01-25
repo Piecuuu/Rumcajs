@@ -19,11 +19,6 @@ export class PermissionsCheck {
     })
     const guildfetched = member.guild
 
-    const g = guild as DBGuild
-    let r = g?.adminRoles
-    if(dbSettings.provider == "sqlite" || dbSettings.provider == "mysql") {
-      r = (g.adminRoles as any).split(",")
-    }
 
     if(!guild) {
       await Guild.add({
@@ -31,6 +26,11 @@ export class PermissionsCheck {
       } as any)
       return this.isHavingPermission(member, PermissionsBitField.Flags.Administrator);
     };
+    const g = guild as DBGuild
+    let r = g?.adminRoles
+    if(dbSettings.provider == "sqlite" || dbSettings.provider == "mysql") {
+      r = (g.adminRoles as any).split(",")
+    }
 
     if(guildfetched?.ownerId == member.id) return true
     if(this.isHavingPermission(member, PermissionsBitField.Flags.Administrator)) return true;
