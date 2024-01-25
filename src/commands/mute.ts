@@ -180,7 +180,7 @@ class Mute {
           }).catch(() => {})
         }
 
-        member.timeout(toMS, reason).then(() => {
+        member.timeout(toMS, `${reason} | ${out.id}`).then(() => {
           infractionEmitter.emit("send", out)
         }).catch(async () => {
           return await interaction.editReply({

@@ -142,7 +142,7 @@ class Kick {
       }
 
       try {
-        member.kick(reason).then(() => {
+        member.kick(`${reason} | ${out.id}`).then(() => {
           infractionEmitter.emit("send", out)
         })
       } catch(err) {

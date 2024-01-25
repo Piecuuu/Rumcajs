@@ -137,7 +137,7 @@ class Ban {
 
       try {
         member.ban({
-          reason: reason
+          reason: `${reason} | ${out.id}`
         }).then(() => {
           infractionEmitter.emit("send", out)
         })
