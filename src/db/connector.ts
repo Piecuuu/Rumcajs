@@ -32,7 +32,6 @@ type DBConnector = MongoConnector.PrismaClient
   & SQLiteConnector.PrismaClient
   & MySQLConnector.PrismaClient;
 
-
 type DBInfraction = PGConnector.Infraction
   & MongoConnector.Infraction
   & SQLiteConnector.Infraction
@@ -52,6 +51,11 @@ type DBUser = PGConnector.User
   & MongoConnector.User
   & SQLiteConnector.User
   & MySQLConnector.User;
+
+type DBMember = PGConnector.Member
+  & MongoConnector.Member
+  & SQLiteConnector.Member
+  & MySQLConnector.Member;
 
 type DBUserAction = PGConnector.UserAction
   & MongoConnector.UserAction
@@ -75,7 +79,8 @@ export {
   DBUser,
   DBUserAction,
   DBApiAction,
-  DBInfractionAppeal
+  DBInfractionAppeal,
+  DBMember
 }
 
 export default DBConnector
