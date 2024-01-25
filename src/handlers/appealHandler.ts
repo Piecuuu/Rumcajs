@@ -88,6 +88,7 @@ export class AppealHandler {
   async appealModal(
     [interaction]: ArgsOf<"interactionCreate">
   ) {
+    if(!((interaction.type == InteractionType.ModalSubmit) || (interaction.type == InteractionType.MessageComponent))) return;
     const appealModalStr = "appealmodal";
     const appealModalStrLen = appealModalStr.length;
     const idAndappealModelLen = appealModalStrLen+RumcajsId.length;
