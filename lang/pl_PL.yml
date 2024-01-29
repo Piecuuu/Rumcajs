@@ -74,6 +74,9 @@ infraction.dm.appeal.accepted: "zaakceptowana"
 infraction.dm.appeal.denied: "odmówiona"
 infraction.dm.appeal.response: "Ta apelacja została {ADMINRESPONSE}."
 
+infraction.dm.appeal.accepted-by: "Zaakceptowano przez"
+infraction.dm.appeal.denied-by: "Odmówiono przez"
+
 infraction.appeal.button.accept: "Zaakceptuj"
 infraction.appeal.button.deny: "Odmów"
 infraction.appeal.button.block: "Zablokuj"

@@ -186,10 +186,9 @@ export class AppealHandler {
       const actionrow = new ActionRowBuilder<ButtonBuilder>()
         .addComponents(buttons);
 
-      const resp = await translation.get("infraction.dm.appeal.denied");
       await interaction.message?.edit({
         components: [actionrow],
-        embeds: [new EmbedBuilder(interaction.message?.embeds[0].toJSON()).setFooter({text: `${resp[0].toUpperCase() + resp.slice(1)} by ${interaction.user.tag}`, iconURL: interaction.user.displayAvatarURL({extension: "webp", size: 128})})]
+        embeds: [new EmbedBuilder(interaction.message?.embeds[0].toJSON()).setFooter({text: `${await translation.get("infraction.dm.appeal.denied-by")} ${interaction.user.tag}`, iconURL: interaction.user.displayAvatarURL({extension: "webp", size: 128})})]
       });
 
       await interaction.editReply({
@@ -197,7 +196,7 @@ export class AppealHandler {
       })
 
       member?.send({
-        content: (await translation.get("infraction.dm.appeal.response")).replace("{ADMINRESPONSE}", resp),
+        content: (await translation.get("infraction.dm.appeal.response")).replace("{ADMINRESPONSE}", await translation.get("infraction.dm.appeal.denied")),
         reply: {
           messageReference: appeal?.dmmessageid!
         }
@@ -270,16 +269,15 @@ export class AppealHandler {
       const actionrow = new ActionRowBuilder<ButtonBuilder>()
         .addComponents(buttons);
 
-      const resp = await translation.get("infraction.dm.appeal.denied");
       await interaction.message?.edit({
         components: [actionrow],
-        embeds: [new EmbedBuilder(interaction.message?.embeds[0].toJSON()).setFooter({text: `${resp[0].toUpperCase() + resp.slice(1)} by ${interaction.user.tag}`, iconURL: interaction.user.displayAvatarURL({extension: "webp", size: 128})})]
+        embeds: [new EmbedBuilder(interaction.message?.embeds[0].toJSON()).setFooter({text: `${await translation.get("infraction.dm.appeal.denied-by")} ${interaction.user.tag}`, iconURL: interaction.user.displayAvatarURL({extension: "webp", size: 128})})]
       });
       await interaction.editReply({
         content: await translation.get("infraction.appeal.embed.denied")
       })
       member?.send({
-        content: (await translation.get("infraction.dm.appeal.response")).replace("{ADMINRESPONSE}", resp),
+        content: (await translation.get("infraction.dm.appeal.response")).replace("{ADMINRESPONSE}", await translation.get("infraction.dm.appeal.denied")),
         reply: {
           messageReference: appeal.dmmessageid
         }
@@ -351,17 +349,16 @@ export class AppealHandler {
       const actionrow = new ActionRowBuilder<ButtonBuilder>()
         .addComponents(buttons);
 
-      const resp = await translation.get("infraction.dm.appeal.accepted");
       await interaction.message?.edit({
         components: [actionrow],
-        embeds: [new EmbedBuilder(interaction.message?.embeds[0].toJSON()).setFooter({text: `${resp[0].toUpperCase() + resp.slice(1)} by ${interaction.user.tag}`, iconURL: interaction.user.displayAvatarURL({extension: "webp", size: 128})})]
+        embeds: [new EmbedBuilder(interaction.message?.embeds[0].toJSON()).setFooter({text: `${await translation.get("infraction.dm.appeal.accepted-by")} ${interaction.user.tag}`, iconURL: interaction.user.displayAvatarURL({extension: "webp", size: 128})})]
       });
 
       await interaction.editReply({
         content: await translation.get("infraction.appeal.embed.accepted"),
       })
       member?.send({
-        content: (await translation.get("infraction.dm.appeal.response")).replace("{ADMINRESPONSE}", resp),
+        content: (await translation.get("infraction.dm.appeal.response")).replace("{ADMINRESPONSE}", await translation.get("infraction.dm.appeal.accepted")),
         reply: {
           messageReference: appeal.dmmessageid
         }

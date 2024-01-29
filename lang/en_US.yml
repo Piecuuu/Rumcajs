@@ -74,6 +74,9 @@ infraction.dm.appeal.accepted: "accepted"
 infraction.dm.appeal.denied: "denied"
 infraction.dm.appeal.response: "This appeal has been {ADMINRESPONSE}."
 
+infraction.dm.appeal.accepted-by: "Accepted by"
+infraction.dm.appeal.denied-by: "Denied by"
+
 infraction.appeal.button.accept: "Accept"
 infraction.appeal.button.deny: "Deny"
 infraction.appeal.button.block: "Block"
