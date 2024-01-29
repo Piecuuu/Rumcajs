@@ -89,4 +89,6 @@ model InfractionAppeal {
   reason       String?
   type         String
   creationdate DateTime
+  status       Int
+  moderator    String?
 }
