@@ -1,4 +1,4 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, DMChannel, GuildMember, InteractionType, ModalBuilder, ModalSubmitInteraction, TextChannel, TextInputBuilder, TextInputStyle } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, DMChannel, EmbedBuilder, GuildMember, InteractionType, ModalBuilder, ModalSubmitInteraction, TextChannel, TextInputBuilder, TextInputStyle } from "discord.js";
 import { ArgsOf, ButtonComponent, Discord, On } from "discordx";
 import { Bot } from "../bot.js";
 import { Database } from "../db.js";
@@ -8,6 +8,13 @@ import { RumcajsId } from "../misc/id.js";
 import { Translation } from "./lang.js";
 import { EventEmitter } from "events";
 import { PermissionsCheck } from "../misc/permcheck.js";
+import { InfractionType } from "../types.js";
+
+export const enum AppealStatus {
+  Open = 0b00,
+  Denied = 0b01,
+  Approved = 0b10,
+}
 
 @Discord()
 export class AppealHandler {
@@ -59,7 +66,7 @@ export class AppealHandler {
     const modal = new ModalBuilder()
       .addComponents([ar])
       .setTitle("Appeal")
-      .setCustomId("appealmodal" + id + interaction.message.id)
+      .setCustomId(`appealmodal_${infraction?.id}_${interaction.message.id}`)
 
     await interaction.showModal(modal)
   }
@@ -89,18 +96,15 @@ export class AppealHandler {
     [interaction]: ArgsOf<"interactionCreate">
   ) {
     if(!((interaction.type == InteractionType.ModalSubmit) || (interaction.type == InteractionType.MessageComponent))) return;
-    const appealModalStr = "appealmodal";
-    const appealModalStrLen = appealModalStr.length;
-    const idAndappealModelLen = appealModalStrLen+RumcajsId.length;
-
-    interaction = interaction as ButtonInteraction | ModalSubmitInteraction
 
     const split = interaction.customId.split("_");
+    // TODO: Check if already sent (maybe grey out buttons)
 
-    if(interaction.customId.substring(0, appealModalStrLen) === appealModalStr) {
+    if(split[0] === "appealmodal") {
       if(interaction.type != InteractionType.ModalSubmit) return;
-      const id = interaction.customId.substring(appealModalStrLen, idAndappealModelLen); // I'm fucking dumb, I just realized i can just split("_") everything and it would be easier...
-      const mid = interaction.customId.substring(idAndappealModelLen, idAndappealModelLen+19);
+      // Haha, I implemented it anyways...
+      const id = split[1];
+      const mid = split[2];
       const message = await (await Bot.Client.channels.fetch(interaction.channelId!) as DMChannel).messages.fetch(mid);
       const infraction = await Database.Db.infraction.findUnique({
         where: {
@@ -117,7 +121,8 @@ export class AppealHandler {
           dmchannel: interaction.channelId!,
           dmmessageid: mid,
           id: RumcajsId.generateId(),
-          creationdate: new Date()
+          creationdate: new Date(),
+          status: AppealStatus.Open
         }
       });
       const newbtn = await AppealHandler.createAppealActionRow(infraction?.guild!);
@@ -136,23 +141,235 @@ export class AppealHandler {
           embeds: [await userNotAdminEmbed(interaction.guild?.id!)]
         })
       }
+      await interaction.deferReply({
+        ephemeral: true
+      })
       const id = split[1];
       const appeal = await Database.Db.infractionAppeal.findUnique({
         where: {
           id: id
         }
       });
-
-      Database.Db.member.create({
+      const translation = await (await (new Translation()).init(await Translation.getGuildLangCode(appeal?.guild!)));
+      if(interaction.user.id == appeal?.author) {
+        return await interaction.editReply({
+          content: await translation.get("infraction.appeal.error.self-moderate")
+        })
+      }
+      let shouldReturn = false;
+      const members = interaction.guild?.members;
+      const member = members?.cache.has(appeal?.author!) ? members?.cache.get(appeal?.author!) : await members?.fetch(appeal?.author!).catch(async () => {
+        shouldReturn = true;
+        throw await interaction.editReply({
+          content: await translation.get("error.no-member-on-server")
+        })
+      });
+      if(shouldReturn) return;
+      if(!(await PermissionsCheck.canMemberPunishOtherMember(interaction.member as GuildMember, member!))) {
+        return await interaction.editReply({
+          content: await translation.get("infraction.appeal.error.moderate-higher-rank")
+        })
+      }
+      await Database.Db.infractionAppeal.update({
+        where: {
+          id
+        },
         data: {
-          id: RumcajsId.generateId(),
-          blockAuthorId: interaction.user.id,
-          guildId: interaction.guildId!,
-          userId: appeal?.author!,
-          blocked: true
+          status: AppealStatus.Denied,
+          moderator: interaction.user.id
         }
       });
+
+      const buttons: ButtonBuilder[] = (await this.getButtons(translation, appeal as DBInfractionAppeal)).map<ButtonBuilder>(button => {
+        return button.setDisabled(true);
+      });
+      const actionrow = new ActionRowBuilder<ButtonBuilder>()
+        .addComponents(buttons);
+
+      await interaction.message?.edit({
+        components: [actionrow],
+        embeds: [new EmbedBuilder(interaction.message?.embeds[0].toJSON()).setFooter({text: `${await translation.get("infraction.dm.appeal.denied-by")} ${interaction.user.tag}`, iconURL: interaction.user.displayAvatarURL({extension: "webp", size: 128})})]
+      });
+
+      await interaction.editReply({
+        content: await translation.get("infraction.appeal.embed.blocked")
+      })
+
+      member?.send({
+        content: (await translation.get("infraction.dm.appeal.response")).replace("{ADMINRESPONSE}", await translation.get("infraction.dm.appeal.denied")),
+        reply: {
+          messageReference: appeal?.dmmessageid!
+        }
+      }).catch(() => {})
+      if(await Database.Db.member.count({ where: { userId: appeal?.author, guildId: appeal?.guild }}) <= 0) {
+        await Database.Db.member.create({
+          data: {
+            id: RumcajsId.generateId(),
+            blockAuthorId: interaction.user.id,
+            guildId: interaction.guildId!,
+            userId: appeal?.author!,
+            blocked: true
+          }
+        });
+        return;
+      }
+
+      await Database.Db.member.update({
+        where: {
+          userId: appeal?.author,
+          guildId: appeal?.guild,
+        },
+        data: {
+          blockAuthorId: interaction.user.id,
+          blocked: true,
+        }
+      });
+    } else if(split[0] === "deny") {
+      if(!(await PermissionsCheck.isAdmin(interaction.member as GuildMember))) {
+        return await interaction.reply({
+          embeds: [await userNotAdminEmbed(interaction.guild?.id!)]
+        })
+      }
+      await interaction.deferReply({
+        ephemeral: true
+      })
+      const id = split[1];
+      const appeal = await Database.Db.infractionAppeal.update({
+        where: {
+          id
+        },
+        data: {
+          status: AppealStatus.Denied,
+          moderator: interaction.user.id
+        }
+      })
+      const translation = await (await (new Translation()).init(await Translation.getGuildLangCode(appeal?.guild!)));
+      if(interaction.user.id == appeal?.author) {
+        return await interaction.editReply({
+          content: await translation.get("infraction.appeal.error.self-moderate")
+        })
+      }
+      let shouldReturn = false;
+      const members = interaction.guild?.members;
+      const member = members?.cache.has(appeal?.author!) ? members?.cache.get(appeal?.author!) : await members?.fetch(appeal?.author!).catch(async () => {
+        shouldReturn = true;
+        throw await interaction.editReply({
+          content: await translation.get("error.no-member-on-server")
+        })
+      });
+      if(shouldReturn) return;
+      if(!(await PermissionsCheck.canMemberPunishOtherMember(interaction.member as GuildMember, member!))) {
+        return await interaction.editReply({
+          content: await translation.get("infraction.appeal.error.moderate-higher-rank")
+        })
+      }
+      const buttons: ButtonBuilder[] = (await this.getButtons(translation, appeal as DBInfractionAppeal)).map<ButtonBuilder>(button => {
+        return button.setDisabled(true);
+      });
+      const actionrow = new ActionRowBuilder<ButtonBuilder>()
+        .addComponents(buttons);
+
+      await interaction.message?.edit({
+        components: [actionrow],
+        embeds: [new EmbedBuilder(interaction.message?.embeds[0].toJSON()).setFooter({text: `${await translation.get("infraction.dm.appeal.denied-by")} ${interaction.user.tag}`, iconURL: interaction.user.displayAvatarURL({extension: "webp", size: 128})})]
+      });
+      await interaction.editReply({
+        content: await translation.get("infraction.appeal.embed.denied")
+      })
+      member?.send({
+        content: (await translation.get("infraction.dm.appeal.response")).replace("{ADMINRESPONSE}", await translation.get("infraction.dm.appeal.denied")),
+        reply: {
+          messageReference: appeal.dmmessageid
+        }
+      }).catch(() => {})
+    } else if(split[0] === "accept") {
+      if(!(await PermissionsCheck.isAdmin(interaction.member as GuildMember))) {
+        return await interaction.reply({
+          embeds: [await userNotAdminEmbed(interaction.guild?.id!)]
+        })
+      }
+      await interaction.deferReply({
+        ephemeral: true
+      })
+      const id = split[1];
+      const appeal = await Database.Db.infractionAppeal.update({
+        where: {
+          id
+        },
+        data: {
+          status: AppealStatus.Approved,
+          moderator: interaction.user.id
+        }
+      })
+      const translation = await (await (new Translation()).init(await Translation.getGuildLangCode(appeal?.guild!)));
+      if(interaction.user.id == appeal?.author) {
+        return await interaction.editReply({
+          content: await translation.get("infraction.appeal.error.self-moderate")
+        })
+      }
+      let shouldReturn = false;
+      const members = interaction.guild?.members;
+      const member = members?.cache.has(appeal?.author!) ? members?.cache.get(appeal?.author!) : await members?.fetch(appeal?.author!).catch(async () => {
+        shouldReturn = true;
+        throw await interaction.editReply({
+          content: await translation.get("error.no-member-on-server")
+        })
+      });
+      if(shouldReturn) return;
+      if(!(await PermissionsCheck.canMemberPunishOtherMember(interaction.member as GuildMember, member!))) {
+        return await interaction.editReply({
+          content: await translation.get("infraction.appeal.error.moderate-higher-rank")
+        })
+      }
+      const inf = await Database.Db.infraction.findUnique({where: {id: appeal.infid}});
+      await Database.Db.infraction.update({
+        where: {
+          id: appeal.infid
+        },
+        data: {
+          deleted: true,
+          reason: `${inf?.reason} | Appealed ${appeal.id}`,
+        }
+      })
+
+      if(inf?.type == InfractionType.Mute) {
+        if(member?.isCommunicationDisabled()) {
+          const currentTime = Date.now();
+          const timeoutExpiration = inf.creationdate.getTime() + inf.timeuntil! * 1000;
+
+          if(currentTime < timeoutExpiration) {
+            member?.timeout(1, `Unmuted due to appeal ${appeal.id}`);
+          }
+        }
+      }
+
+      const buttons: ButtonBuilder[] = (await this.getButtons(translation, appeal as DBInfractionAppeal)).map<ButtonBuilder>(button => {
+        return button.setDisabled(true);
+      });
+      const actionrow = new ActionRowBuilder<ButtonBuilder>()
+        .addComponents(buttons);
+
+      await interaction.message?.edit({
+        components: [actionrow],
+        embeds: [new EmbedBuilder(interaction.message?.embeds[0].toJSON()).setFooter({text: `${await translation.get("infraction.dm.appeal.accepted-by")} ${interaction.user.tag}`, iconURL: interaction.user.displayAvatarURL({extension: "webp", size: 128})})]
+      });
+
+      await interaction.editReply({
+        content: await translation.get("infraction.appeal.embed.accepted"),
+      })
+      member?.send({
+        content: (await translation.get("infraction.dm.appeal.response")).replace("{ADMINRESPONSE}", await translation.get("infraction.dm.appeal.accepted")),
+        reply: {
+          messageReference: appeal.dmmessageid
+        }
+      }).catch(() => {})
     }
+    /**
+     * 00 - Open
+     * 01 - Denied
+     * 10 - Approved
+     * 11 - Unused
+     */
   }
 
   async sendToAdmins(appeal: DBInfractionAppeal, infraction: DBInfraction) {
@@ -195,16 +412,32 @@ export class AppealHandler {
         }
       ])
 
-    const button = new ButtonBuilder()
-      .setLabel(await (await embed.translation).get(""))
-
     const actionRow = new ActionRowBuilder<ButtonBuilder>()
-      .addComponents(button)
+      .addComponents(await this.getButtons(await embed.translation, appeal))
 
     appealChannel.send({
       embeds: [embed],
       components: [actionRow],
-    }).catch(() => {});
+    });
+  }
+
+  async getButtons(translation: Translation, appeal: DBInfractionAppeal): Promise<ButtonBuilder[]> {
+    const buttonaccept = new ButtonBuilder()
+      .setLabel(await (await translation).get("infraction.appeal.button.accept"))
+      .setStyle(ButtonStyle.Success)
+      .setCustomId(`accept_${appeal.id}`);
+
+    const buttondeny = new ButtonBuilder()
+      .setLabel(await (await translation).get("infraction.appeal.button.deny"))
+      .setStyle(ButtonStyle.Danger)
+      .setCustomId(`deny_${appeal.id}`);
+
+    const buttonblock = new ButtonBuilder()
+      .setLabel(await (await translation).get("infraction.appeal.button.block"))
+      .setStyle(ButtonStyle.Secondary)
+      .setCustomId(`block_${appeal.id}`);
+
+    return [buttonaccept, buttondeny, buttonblock];
   }
 }
 

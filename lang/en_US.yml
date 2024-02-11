@@ -9,6 +9,7 @@ error.member-no-perms: "You don't have `{PERM}` permission."
 error.target-has-higher-ranks: "This member's highest rank is above your highest rank."
 error.unknown-error: "An error has occured."
 error.not-guild-owner: "You are not the guild's owner."
+error.no-member-on-server: "This user is not a member of this server anymore."
 
 cmd.moderator.neutral.no-infractions-given: "This moderator hasn't given out any infractions."
 cmd.moderator.neutral.lookup-title: "Moderator Lookup"
@@ -65,7 +66,33 @@ infraction.dm.appeal.sent: "Sent"
 infraction.appeal.reason: "Reason"
 infraction.appeal.embed.title: "Appeal"
 
+infraction.appeal.embed.accepted: "The appeal has been accepted."
+infraction.appeal.embed.denied: "The appeal has been denied."
+infraction.appeal.embed.blocked: "The appeal has been denied and the user has been blocked from creating more appeals."
+
+infraction.dm.appeal.accepted: "accepted"
+infraction.dm.appeal.denied: "denied"
+infraction.dm.appeal.response: "This appeal has been {ADMINRESPONSE}."
+
+infraction.dm.appeal.accepted-by: "Accepted by"
+infraction.dm.appeal.denied-by: "Denied by"
+
+infraction.appeal.button.accept: "Accept"
+infraction.appeal.button.deny: "Deny"
 infraction.appeal.button.block: "Block"
+
+infraction.appeal.error.self-moderate: "You may not moderate your own appeal."
+infraction.appeal.error.moderate-higher-rank: "You may not moderate an appeal of a someone with a higher rank than you."
+infraction.appeal.error.user-blocked: "You are blocked from making appeals."
+
+cmd.infraction.appeal-list.status.denied: "Denied"
+cmd.infraction.appeal-list.status.accepted: "Accepted"
+cmd.infraction.appeal-list.status.open: "Open"
+
+cmd.infraction.appeal-list.no-appeals: "This user has made no appeals."
+cmd.infraction.appeal-list.neutral.title: "User Appeals"
+cmd.infraction.appeal-list.footer-appeals: " | Total appeals: {TOTALAPPEALS}"
+cmd.infraction.appeal-list.desc-appeals: "**Appeal status:** `{APPEALSTATUS}`\n**Infraction Type:** `{INFRACTIONTYPE}`\n**Appeal ID:** `{APPEALID}`\n**Infraction ID:** `{INFID}`\n**Appeal moderator:** {APMODERATOR}\n**Reason:** `{REASON}`\n**Creation Date:** {CREATIONDATE}"
 
 cmd.ban.banned: "***{USER} has been banned***"
 cmd.ban.not-punishable: "Member not bannable!"

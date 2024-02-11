@@ -9,6 +9,7 @@ error.member-no-perms: "Nie masz permisji `{PERM}`."
 error.target-has-higher-ranks: "Rola tego użytkownika jest wyższa od twojej roli."
 error.unknown-error: "Nastąpił nieznajomy błąd."
 error.not-guild-owner: "Nie jesteś właścicielem serwera."
+error.no-member-on-server: "Tego użytkownika już nie ma na tym serwerze."
 
 cmd.moderator.neutral.no-infractions-given: "Ten moderator jeszcze nie wystawił żadnych naruszeń."
 cmd.moderator.neutral.lookup-title: "Podgląd moderatora"
@@ -65,7 +66,33 @@ infraction.dm.appeal.sent: "Wysłano"
 infraction.appeal.reason: "Powód"
 infraction.appeal.embed.title: "Aplelacja"
 
+infraction.appeal.embed.accepted: "Zaakceptowano."
+infraction.appeal.embed.denied: "Odmówiono."
+infraction.appeal.embed.blocked: "Odmówiono apelacji, oraz zablokowano autora przed tworzeniem następnych apelacji"
+
+infraction.dm.appeal.accepted: "zaakceptowana"
+infraction.dm.appeal.denied: "odmówiona"
+infraction.dm.appeal.response: "Ta apelacja została {ADMINRESPONSE}."
+
+infraction.dm.appeal.accepted-by: "Zaakceptowano przez"
+infraction.dm.appeal.denied-by: "Odmówiono przez"
+
+infraction.appeal.button.accept: "Zaakceptuj"
+infraction.appeal.button.deny: "Odmów"
 infraction.appeal.button.block: "Zablokuj"
+
+infraction.appeal.error.self-moderate: "Nie możesz moderować swojej własnej apelacji."
+infraction.appeal.error.moderate-higher-rank: "Nie możesz moderować apelacji użytkownika z wyższą rangą od twojej."
+infraction.appeal.error.user-blocked: "Jesteś zablokowany przed tworzeniem apelacji."
+
+cmd.infraction.appeal-list.status.denied: "Odmówiona"
+cmd.infraction.appeal-list.status.accepted: "Zaakceptowana"
+cmd.infraction.appeal-list.status.open: "Otwarta"
+
+cmd.infraction.appeal-list.no-appeals: "Ten użytkownik nie stworzył jeszcze żadnych apelacji."
+cmd.infraction.appeal-list.neutral.title: "Apelacje użytkownika"
+cmd.infraction.appeal-list.footer-appeals: " | Liczba apelacji: {TOTALAPPEALS}"
+cmd.infraction.appeal-list.desc-appeals: "**Status apelacji:** `{APPEALSTATUS}`\n**Typ naruszenia:** `{INFRACTIONTYPE}`\n**ID apelacji:** `{APPEALID}`\n**ID naruszenia:** `{INFID}`\n**Moderator apelacji:** {APMODERATOR}\n**Powód apelacji:** `{REASON}`\n**Data utworzenia:** {CREATIONDATE}"
 
 cmd.ban.banned: "***{USER} został zbanowany***"
 cmd.ban.not-punishable: "Nie można zbanować tego użytkownika!"
