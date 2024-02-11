@@ -179,6 +179,21 @@ export class User {
   }
 
   static async updateUserPoints(userId: string, guildId: string, points: number) {
+    if(await Database.Db.member.count({
+      where: {
+        userId: userId,
+        guildId: guildId,
+      }
+    }) == 0) {
+      await Database.Db.member.create({
+        data: {
+          id: RumcajsId.generateId(),
+          guildId: guildId,
+          userId: userId,
+          blocked: false,
+        }
+      }).catch(() => {})
+    }
     return await Database.Db.member.update({
       where: {
         userId: userId,
@@ -235,7 +250,6 @@ export class User {
           guildId: guildId,
           userId: userId,
           blocked: false,
-          blockAuthorId: "",
         }
       }).catch(() => {})
     }
@@ -264,7 +278,6 @@ export class User {
           guildId: guildId,
           userId: userId,
           blocked: false,
-          blockAuthorId: "",
         }
       }).catch(() => {})
     }
@@ -296,7 +309,6 @@ export class User {
           guildId: guildId,
           userId: userId,
           blocked: false,
-          blockAuthorId: "",
         }
       }).catch(() => {})
     }
@@ -328,7 +340,6 @@ export class User {
           guildId: guildId,
           userId: userId,
           blocked: false,
-          blockAuthorId: "",
         }
       }).catch(() => {})
       return false;

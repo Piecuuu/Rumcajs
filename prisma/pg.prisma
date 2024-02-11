@@ -47,8 +47,8 @@ model Member {
   userId   String @unique
   guild    Guild  @relation(fields: [guildId], references: [guildid])
   guildId  String
-  blockAuthor   User   @relation("author", fields: [blockAuthorId], references: [userid])
-  blockAuthorId String
+  blockAuthor   User?   @relation("author", fields: [blockAuthorId], references: [userid])
+  blockAuthorId String?
   blocked  Boolean
   points   Int @default(0)
 }
