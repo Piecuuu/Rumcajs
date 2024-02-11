@@ -12,6 +12,7 @@ import { ErrorEmbed, NeutralEmbed, SuccessEmbed } from "../misc/embeds.js";
 import { Format } from "../misc/format.js";
 import { RumcajsId } from "../misc/id.js";
 import { UserActions } from "../types.js";
+import { AppealStatus } from "../handlers/appealHandler.js";
 
 @Discord()
 @SlashGroup({ description: "Commands related to infractions.", name: "infraction" })
@@ -312,50 +313,36 @@ class Infractions {
     const filtered = appeals
     if(filtered.length <= 0) {
       const e = new NeutralEmbed(interaction.guild?.id!)
-      e.setDescription(await (await e.translation).get("cmd.infraction.list.no-infractions"))
+      e.setDescription(await (await e.translation).get("cmd.infraction.appeal-list.no-appeals"))
       return await interaction.editReply({
         embeds: [e]
       })
     }
-    const chunkSize = 3;
+    const chunkSize = 2;
     const infractionsChunks: DBInfractionAppeal[][] = [];
     for (let i = 0; i < filtered.length; i += chunkSize) {
       infractionsChunks.push(filtered.slice(i, i + chunkSize));
     }
     const pages: EmbedBuilder[] = [];
     for (const chunk of infractionsChunks) {
-      /* let chunk: Infraction[]
-
-      if(!showhidden) {
-        chunk = ch.filter(c => (c.deleted == false || c.deleted == null))
-      } else {
-        chunk = ch
-      } */
       if(chunk.length <= 0) continue
 
       const e = new NeutralEmbed(interaction.guild?.id!)
-      e.setTitle(await (await e.translation).get("cmd.infraction.list.neutral.title"))
+      e.setTitle(await (await e.translation).get("cmd.infraction.appeal-list.neutral.title"))
       e.setFooter({
-        text: `${(await (await e.translation).get("cmd.infraction.list.footer-page")).toString().replace("{CURRENTPAGE}", (infractionsChunks.indexOf(chunk) + 1).toString()).replace("{TOTALPAGES}", infractionsChunks.length.toString())}${filtered.length < 999999999999 ? ((await (await e.translation).get("cmd.infraction.list.footer-infractions")).replace("{TOTALINFRACTIONS}", filtered.length.toString())) : ""}`
+        text: `${(await (await e.translation).get("cmd.infraction.list.footer-page")).toString().replace("{CURRENTPAGE}", (infractionsChunks.indexOf(chunk) + 1).toString()).replace("{TOTALPAGES}", infractionsChunks.length.toString())}${filtered.length < 999999999999 ? ((await (await e.translation).get("cmd.infraction.appeal-list.footer-appeals")).replace("{TOTALAPPEALS}", filtered.length.toString())) : ""}`
       })
-      /* `Page ${infractionsChunks.indexOf(chunk) + 1}/${infractionsChunks.length}
-      ${filtered.length < 999999999999 ? ` | Total infractions: ${filtered.length}` : ""}
-      ${(warns.length < 999999999999 || warns.length <= 0) ? ` | Total warns: ${warns.length}` : ""}` */
+
       e.setDescription(`<@${chunk[0].author}>\n\n` + (await Promise.all(chunk.map(async (infraction) => (
-        (await (await e.translation).get("cmd.infraction.list.desc-infraction"))
+        (await (await e.translation).get("cmd.infraction.appeal-list.desc-appeals"))
           .replace("{INFRACTIONTYPE}", infraction.type)
-          .replace("{ID}", infraction.id.toString())
-          .replace("{MODERATOR}", infraction.author)
-          .replace("{REASON}", infraction.reason ? `\`${infraction.reason}\`` : await (await e.translation).get("none-word"))
+          .replace("{APPEALID}", infraction.id.toString())
+          .replace("{INFID}", infraction.infid.toString())
+          .replace("{APMODERATOR}", infraction.moderator ? `<@${infraction.moderator.toString()}>` : await (await e.translation).get("none-word"))
+          .replace("{APPEALSTATUS}", (infraction.status == AppealStatus.Denied ? await (await e.translation).get("cmd.infraction.appeal-list.status.denied") : (infraction.status == AppealStatus.Approved ? await (await e.translation).get("cmd.infraction.appeal-list.status.accepted") : await (await e.translation).get("cmd.infraction.appeal-list.status.open"))))
+          .replace("{REASON}", infraction.reason!)
           .replace("{CREATIONDATE}", `<t:${Math.floor(infraction.creationdate.getTime() / 1000)}:f>`)
       )))).join('\n\n'));
-      /* `
-      **Type:** ${infraction.type}\n
-      **Moderator:** <@${infraction.author}>\n
-      **Reason:** ${infraction.reason ? `\`${infraction.reason}\`` : "*None*"}\n
-      **Creation Date:** <t:${Math.floor(infraction.creationdate.getTime() / 1000)}:f>
-      ${infraction.timeuntil ? `\n**Time:** ${Format.secondsToHms(infraction.timeuntil!)}` : ""}
-      ` */
       pages.push(e);
     }
 

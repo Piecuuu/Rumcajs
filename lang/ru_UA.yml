@@ -84,6 +84,15 @@ infraction.appeal.error.self-moderate: "Ви не можете приймати 
 infraction.appeal.error.moderate-higher-rank: "Ви не можете приймати рішення щодо апеляції особи, яка має вищий ранг, ніж ви."
 infraction.appeal.error.user-blocked: "Ви заблоковані від створення нових апеляцій."
 
+cmd.infraction.appeal-list.status.denied: "Відхилена"
+cmd.infraction.appeal-list.status.accepted: "Прийнята"
+cmd.infraction.appeal-list.status.open: "Відкрита"
+
+cmd.infraction.appeal-list.no-appeals: "Цей користувач ще не створив жодної апеляції."
+cmd.infraction.appeal-list.neutral.title: "Апеляції користувачів"
+cmd.infraction.appeal-list.footer-appeals: " | Кількість апеляцій: {TOTALAPPEALS}"
+cmd.infraction.appeal-list.desc-appeals: "**Статус апеляції:** `{APPEALSTATUS}`\n**Тип порушення:** `{INFRACTIONTYPE}`\n**ID апеляції:** `{APPEALID}`\n**ID порушення:** `{INFID}`\n**Рішучий користувач:** {APMODERATOR}\n**Причина апеляції:** `{REASON}`\n**Дата створення:** {CREATIONDATE}"
+
 cmd.ban.banned: "***{USER} було заблоковано***"
 cmd.ban.not-punishable: "Nie można zbanować tego użytkownika!"
 

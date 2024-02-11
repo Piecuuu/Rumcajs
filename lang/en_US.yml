@@ -85,6 +85,15 @@ infraction.appeal.error.self-moderate: "You may not moderate your own appeal."
 infraction.appeal.error.moderate-higher-rank: "You may not moderate an appeal of a someone with a higher rank than you."
 infraction.appeal.error.user-blocked: "You are blocked from making appeals."
 
+cmd.infraction.appeal-list.status.denied: "Denied"
+cmd.infraction.appeal-list.status.accepted: "Accepted"
+cmd.infraction.appeal-list.status.open: "Open"
+
+cmd.infraction.appeal-list.no-appeals: "This user has made no appeals."
+cmd.infraction.appeal-list.neutral.title: "User Appeals"
+cmd.infraction.appeal-list.footer-appeals: " | Total appeals: {TOTALAPPEALS}"
+cmd.infraction.appeal-list.desc-appeals: "**Appeal status:** `{APPEALSTATUS}`\n**Infraction Type:** `{INFRACTIONTYPE}`\n**Appeal ID:** `{APPEALID}`\n**Infraction ID:** `{INFID}`\n**Appeal moderator:** {APMODERATOR}\n**Reason:** `{REASON}`\n**Creation Date:** {CREATIONDATE}"
+
 cmd.ban.banned: "***{USER} has been banned***"
 cmd.ban.not-punishable: "Member not bannable!"
 

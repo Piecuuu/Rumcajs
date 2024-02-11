@@ -85,6 +85,15 @@ infraction.appeal.error.self-moderate: "Nie możesz moderować swojej własnej a
 infraction.appeal.error.moderate-higher-rank: "Nie możesz moderować apelacji użytkownika z wyższą rangą od twojej."
 infraction.appeal.error.user-blocked: "Jesteś zablokowany przed tworzeniem apelacji."
 
+cmd.infraction.appeal-list.status.denied: "Odmówiona"
+cmd.infraction.appeal-list.status.accepted: "Zaakceptowana"
+cmd.infraction.appeal-list.status.open: "Otwarta"
+
+cmd.infraction.appeal-list.no-appeals: "Ten użytkownik nie stworzył jeszcze żadnych apelacji."
+cmd.infraction.appeal-list.neutral.title: "Apelacje użytkownika"
+cmd.infraction.appeal-list.footer-appeals: " | Liczba apelacji: {TOTALAPPEALS}"
+cmd.infraction.appeal-list.desc-appeals: "**Status apelacji:** `{APPEALSTATUS}`\n**Typ naruszenia:** `{INFRACTIONTYPE}`\n**ID apelacji:** `{APPEALID}`\n**ID naruszenia:** `{INFID}`\n**Moderator apelacji:** {APMODERATOR}\n**Powód apelacji:** `{REASON}`\n**Data utworzenia:** {CREATIONDATE}"
+
 cmd.ban.banned: "***{USER} został zbanowany***"
 cmd.ban.not-punishable: "Nie można zbanować tego użytkownika!"
 

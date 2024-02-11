@@ -10,7 +10,7 @@ import { EventEmitter } from "events";
 import { PermissionsCheck } from "../misc/permcheck.js";
 import { InfractionType } from "../types.js";
 
-const enum AppealStatus {
+export const enum AppealStatus {
   Open = 0b00,
   Denied = 0b01,
   Approved = 0b10,
