@@ -21,7 +21,7 @@
     "gen/mongo": "prisma generate --schema=\"./prisma/mongo.prisma\"",
     "gen/mysql": "prisma generate --schema=\"./prisma/mysql.prisma\"",
     "gen/sqlite": "prisma generate --schema=\"./prisma/sqlite.prisma\"",
-    "gen/all": "prisma generate --schema=\"./prisma/pg.prisma\" && prisma generate --schema=\"./prisma/mongo.prisma\" && prisma generate --schema=\"./prisma/sqlite.prisma\" && prisma generate --schema=\"./prisma/sqlite.prisma\""
+    "gen/all": "prisma generate --schema=\"./prisma/pg.prisma\" && prisma generate --schema=\"./prisma/mongo.prisma\" && prisma generate --schema=\"./prisma/sqlite.prisma\" && prisma generate --schema=\"./prisma/mysql.prisma\""
   },
   "dependencies": {
     "@discordx/importer": "^1.1.10",
