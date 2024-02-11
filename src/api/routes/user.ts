@@ -107,7 +107,7 @@ export class User {
   async DUserSetBlocked(req: Request, res: Response)  {
     if(!req.params.id) return res.status(400).json({code: 9, message: "no userid"})
     if(req.body.blocked == null || req.body.blocked == undefined) return res.status(400).json({code: 10, message: "no blocked in body"})
-    const duser = await User.setBlocked(req.params.id, req.params.guildid, req.body.blocked).catch(() => {
+    const duser = await User.setBlocked(req.params.id, Bot.Client.botId, req.params.guildid, req.body.blocked).catch(() => {
       res.status(404).json({code: 7, message: "Didnt register user yet"})
     })
     res.status(200).json(duser)
@@ -228,7 +228,17 @@ export class User {
         userId: userId,
         guildId: guildId,
       }
-    }) == 0) return
+    }) == 0) {
+      await Database.Db.member.create({
+        data: {
+          id: RumcajsId.generateId(),
+          guildId: guildId,
+          userId: userId,
+          blocked: false,
+          blockAuthorId: "",
+        }
+      }).catch(() => {})
+    }
 
     return await Database.Db.member.update({
       where: {
@@ -242,6 +252,22 @@ export class User {
   }
 
   static async addPoints(userId: string, guildId: string, points: number) {
+    if(await Database.Db.member.count({
+      where: {
+        userId: userId,
+        guildId: guildId,
+      }
+    }) == 0) {
+      await Database.Db.member.create({
+        data: {
+          id: RumcajsId.generateId(),
+          guildId: guildId,
+          userId: userId,
+          blocked: false,
+          blockAuthorId: "",
+        }
+      }).catch(() => {})
+    }
     const updated = await Database.Db.member.update({
       where: {
         userId: userId,
@@ -258,6 +284,22 @@ export class User {
   }
 
   static async subPoints(userId: string, guildId: string, points: number) {
+    if(await Database.Db.member.count({
+      where: {
+        userId: userId,
+        guildId: guildId,
+      }
+    }) == 0) {
+      await Database.Db.member.create({
+        data: {
+          id: RumcajsId.generateId(),
+          guildId: guildId,
+          userId: userId,
+          blocked: false,
+          blockAuthorId: "",
+        }
+      }).catch(() => {})
+    }
     const updated = await Database.Db.member.update({
       where: {
         userId: userId,
@@ -274,6 +316,23 @@ export class User {
   }
 
   static async isBlocked(userId: string, guildId: string) {
+    if(await Database.Db.member.count({
+      where: {
+        userId: userId,
+        guildId: guildId,
+      }
+    }) == 0) {
+      await Database.Db.member.create({
+        data: {
+          id: RumcajsId.generateId(),
+          guildId: guildId,
+          userId: userId,
+          blocked: false,
+          blockAuthorId: "",
+        }
+      }).catch(() => {})
+      return false;
+    }
     const user = await Database.Db.member.findUnique({
       where: {
         userId: userId,
@@ -283,11 +342,29 @@ export class User {
     return user?.blocked
   }
 
-  static async setBlocked(userId: string, guildId: string, blocked: boolean) {
+  static async setBlocked(userId: string, blockAuthor: string, guildId: string, blocked: boolean) {
+    if(await Database.Db.member.count({
+      where: {
+        userId: userId,
+        guildId: guildId,
+      }
+    }) == 0) {
+      await Database.Db.member.create({
+        data: {
+          id: RumcajsId.generateId(),
+          guildId: guildId,
+          userId: userId,
+          blocked: true,
+          blockAuthorId: blockAuthor,
+        }
+      }).catch(() => {})
+      return true;
+    }
     const user = await Database.Db.member.update({
       where: {
         userId: userId,
         guildId: guildId,
+        blockAuthorId: blockAuthor,
       },
       data: {
         blocked: blocked
