@@ -9,6 +9,7 @@ error.member-no-perms: "У вас немає дозволів `{PERM}`."
 error.target-has-higher-ranks: "Роль цього користувача вища за вашу."
 error.unknown-error: "Виникла незнайома помилка."
 error.not-guild-owner: "Ви не володієте сервером."
+error.no-member-on-server: "Цей користувач більше не є членом цього сервера."
 
 cmd.moderator.neutral.no-infractions-given: "Цей модератор ще не видав жодного порушення."
 cmd.moderator.neutral.lookup-title: "Попередній перегляд модератора"
@@ -64,7 +65,24 @@ infraction.dm.appeal.sent: "Надіслано"
 infraction.appeal.reason: "Причина"
 infraction.appeal.embed.title: "Апеляція"
 
+infraction.appeal.embed.accepted: "Апеляція була прийнята."
+infraction.appeal.embed.denied: "Апеляція була відхилена."
+infraction.appeal.embed.blocked: "Апеляція була відхилена, а користувачеві було заблоковано можливість створювати нові апеляції."
+
+infraction.dm.appeal.accepted: "прийнята"
+infraction.dm.appeal.denied: "відхилена"
+infraction.dm.appeal.response: "Апеляція була {ADMINRESPONSE}."
+
+infraction.dm.appeal.accepted-by: "Прийнято користувачем"
+infraction.dm.appeal.denied-by: "Відхилено користувачем"
+
+infraction.appeal.button.accept: "Прийняти"
+infraction.appeal.button.deny: "Відхилити"
 infraction.appeal.button.block: "блок"
+
+infraction.appeal.error.self-moderate: "Ви не можете приймати рішення щодо власної апеляції."
+infraction.appeal.error.moderate-higher-rank: "Ви не можете приймати рішення щодо апеляції особи, яка має вищий ранг, ніж ви."
+infraction.appeal.error.user-blocked: "Ви заблоковані від створення нових апеляцій."
 
 cmd.ban.banned: "***{USER} було заблоковано***"
 cmd.ban.not-punishable: "Nie można zbanować tego użytkownika!"
