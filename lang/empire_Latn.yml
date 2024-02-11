@@ -1,0 +1,115 @@
+#init
+flag: "🇺🇸"
+
+error.invalid-user: "Provided an invalid user or a non-existent one."
+error.reason-too-long: "Provided reason is over 300 characters long."
+error.user-is-admin: "This user is a moderator or is the owner."
+error.executor-not-admin: "You es no moderator."
+error.bot-no-perms: "I do not have `{PERM}` permission."
+error.member-no-perms: "You don't have `{PERM}` permission."
+error.target-has-higher-ranks: "This member's highest rank is above your highest rank."
+error.unknown-error: "An error has occured."
+error.not-guild-owner: "You are not the guild's owner."
+
+cmd.moderator.neutral.no-infractions-given: "This moderator hasn't given out any infractions."
+cmd.moderator.neutral.lookup-title: "Moderator Lookup"
+cmd.moderator.neutral.footer-page: "Page {CURRENTPAGE}/{TOTALPAGES}"
+cmd.moderator.neutral.footer-infractions: " | Infractions Given: {INFRACTIONSGIVEN}"
+cmd.moderator.neutral.footer-warns: " | Warns Given: {WARNSGIVEN}"
+cmd.moderator.neutral.desc-infraction: "**Type:** {INFRACTIONTYPE}\n**ID:** `{ID}`\n**User:** <@{TARGET}>\n**Reason:** {REASON}\n**Creation Date:** {CREATIONDATE}"
+common.desc-infraction.time: "\n**Time:** {TIME}"
+
+cmd.infraction.list.no-infractions: "This user has no infractions."
+cmd.infraction.list.neutral.title: "User Infractions"
+cmd.infraction.list.footer-page: "Page {CURRENTPAGE}/{TOTALPAGES}"
+cmd.infraction.list.footer-infractions: " | Total infractions: {TOTALINFRACTIONS}"
+cmd.infraction.list.footer-warns: " | Total warns: {TOTALWARNS}"
+cmd.infraction.list.desc-infraction: "**Type:** {INFRACTIONTYPE}\n**ID:** `{ID}`\n**Moderator:** <@{MODERATOR}>\n**Reason:** {REASON}\n**Creation Date:** {CREATIONDATE}"
+
+#cmd.infraction.get.desc-infraction: "**Type:** `{INFRACTIONTYPE}`\n**ID:** `{ID}`\n**User:** <@{TARGET}>\n**Moderator:** <@{MODERATOR}>\n**Reason:** {REASON}\n**Creation Date:** {CREATIONDATE}"
+cmd.infraction.get.field.user: "User"
+cmd.infraction.get.field.moderator: "Moderator"
+cmd.infraction.get.field.type: "Type"
+cmd.infraction.get.field.id: "ID"
+cmd.infraction.get.field.credate: "Creation Date"
+cmd.infraction.get.field.reason: "Reason"
+cmd.infraction.get.field.time: "Time"
+
+none-word: "*Nullus*"
+
+cmd.clear.error.limit: "The provided amount of messages to clear is over 100.\nDue to a limitation in the *Discord API*, I can't delete more than 100 messages at once."
+cmd.clear.nonexistent-channel: "The channel you are running this command from is either non-existent or a DM."
+cmd.clear.channel-arg-invalid: "Invalid channel provided."
+cmd.clear.success.deleted: "Successfully deleted **{AMOUNT}** messages from {CHANNEL}."
+
+common.executed-by: "Executed by {USER}"
+common.error.invalid-object-id: "Invalid ID."
+common.error.time-too-long: "Time too long.\n*Maximum 27 days.*"
+common.error.time-unit-invalid: "Provided an invalid time unit: `{UNIT}`\n*Example use*: `1w 10d 3h 30m`"
+common.error.time-duration-not-positive: "Time duration must be positive."
+common.error.guild-not-set-up: "This guild has not been set up yet.\n*Set it up by using:* {CMDMENTION}"
+common.error.number-negative: "Cannot process a negative number."
+
+infraction.neutral.embed.title.member-kicked: "Member Kicked"
+infraction.neutral.embed.title.member-muted: "Member Muted"
+infraction.neutral.embed.title.member-banned: "Member Banned"
+infraction.neutral.embed.title.member-warned: "Member Warned"
+
+infraction.neutral.embed.fields.time: "Time"
+infraction.neutral.embed.fields.user: "User"
+infraction.neutral.embed.fields.moderator: "Moderator"
+infraction.neutral.embed.fields.reason: "Ratio"
+infraction.success.removed-infraction: "Successfully removed infraction"
+
+infraction.dm.appeal.button: "Appeal"
+infraction.dm.appeal.sent: "Sent"
+infraction.appeal.reason: "Reason"
+infraction.appeal.embed.title: "Appeal"
+
+infraction.appeal.button.block: "Block"
+
+cmd.ban.banned: "***{USER} has been banned***"
+cmd.ban.not-punishable: "Member not bannable!"
+
+cmd.kick.kicked: "***{USER} has been kicked***"
+cmd.kick.not-punishable: "Member not kickable!"
+
+cmd.mute.muted: "***{USER} has been muted***"
+cmd.mute.not-punishable: "Member not mutable!"
+
+cmd.warn.warned: "***{USER} has been warned***"
+
+cmd.unmute.unmuted: "***{USER} has been unmuted***"
+cmd.unmute.error: "I can't unmute this member."
+
+cmd.config.modrole.add.error.max-modrole-reached: "Reached modrole limit."
+cmd.config.modrole.add.error.modrole-already-added: "This role has already been added."
+cmd.config.modrole.add.success.modrole-added: "Added {ROLE} as a modrole"
+cmd.config.modrole.remove.error.modrole-not-existent: "This role isn't a modrole."
+cmd.config.modrole.remove.success.modrole-removed: "Removed {ROLE} from modroles."
+
+cmd.config.specialrole.edit.success.specialrole-added: "Set {ROLE} as a special role."
+cmd.config.specialrole.clear.success.specialrole-cleared: "Cleared the special role."
+
+cmd.config.alertchannel.set.success.alertchannel-set: "Set {CHANNEL} as the alert channel."
+cmd.config.alertchannel.clear.success.alertchannel-cleared: "Cleared the alert channel."
+
+cmd.config.setup.error.guild-exists: "This guild is already set up."
+cmd.config.setup.success: "Successfully set up this guild."
+
+cmd.config.appealchannel.set.success.appealchannel-set: "Set {CHANNEL} as the appeals channel."
+cmd.config.appealchannel.clear.success.appealchannel-cleared: "Cleared the appeals channel."
+
+cmd.config.language: "To set the language, react with a flag of your country to the message below."
+cmd.config.language.react-here: "React to this embed with your flag to set the language."
+cmd.config.language.time-is-up: "2 minutes are up. Rerun the command to try again."
+cmd.config.language.invalid-flag: "Invalid flag!"
+cmd.config.language.set: "Set language to **English** {FLAG}"
+cmd.config.language.no-translation: "There isn't a translation for this language yet."
+
+dm.warn: "You have been warned in **{SERVERNAME}**"
+dm.mute: "You have been muted in **{SERVERNAME}**"
+dm.kick: "You have been kicked from **{SERVERNAME}**"
+dm.ban: "You have been banned from **{SERVERNAME}**"
+
+common.dm.for-reason: " for```{REASON}```"
