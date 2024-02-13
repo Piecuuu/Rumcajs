@@ -44,7 +44,7 @@ class Automod {
       }
     })
     const matchedKeyword = execution.matchedKeyword!;
-    const reason = `Automod has detected a violation of "${execution.autoModerationRule?.name}" due to keyword "${matchedKeyword?.length! > 300-3 ? matchedKeyword?.substring(0, 300-3) + "..." : matchedKeyword}""`;
+    const reason = `Automod has detected a violation of "${execution.autoModerationRule?.name}" due to keyword "${matchedKeyword?.length! > 300-3 ? matchedKeyword?.substring(0, 300-3) + "..." : matchedKeyword}"`;
     switch(infcount) {
       case 0:
       case 1: {
