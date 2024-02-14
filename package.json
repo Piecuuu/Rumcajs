@@ -2,7 +2,6 @@
   "name": "szczurux",
   "version": "0.3.0",
   "main": "build/index.js",
-  "license": "MIT",
   "type": "module",
   "pkg": {
     "options": [
