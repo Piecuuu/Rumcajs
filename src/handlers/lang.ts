@@ -132,4 +132,5 @@ export enum LanguageFlags {
   "🇬🇧" = "en_US",
   "🇨🇦" = "en_US",
   "🇺🇦" = "ru_UA",
+  "🇻🇦" = "la_VA",
 }
