@@ -70,6 +70,8 @@ infraction.appeal.embed.accepted: "The appeal has been accepted."
 infraction.appeal.embed.denied: "The appeal has been denied."
 infraction.appeal.embed.blocked: "The appeal has been denied and the user has been blocked from creating more appeals."
 
+infraction.dm.appeal.clickhere: "Please click the button below to write your appeal."
+
 infraction.dm.appeal.accepted: "accepted"
 infraction.dm.appeal.denied: "denied"
 infraction.dm.appeal.response: "This appeal has been {ADMINRESPONSE}."

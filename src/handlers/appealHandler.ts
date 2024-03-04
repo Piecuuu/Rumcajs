@@ -22,6 +22,7 @@ export class AppealHandler {
     id: "appealbutton"
   })
   async appealHandlerButton(interaction: ButtonInteraction) {
+    await interaction.deferReply();
     //await interaction.deferReply();
     const id = interaction.message.embeds[0].footer?.text!;
     const infraction = await Database.Db.infraction.findUnique({
@@ -52,23 +53,21 @@ export class AppealHandler {
         content: await translation.get("common.error.invalid-object-id")
       });
     }
-    const reasontextmodal = new TextInputBuilder()
-      .setLabel(await translation.get("infraction.appeal.reason"))
-      .setCustomId("reason")
-      .setRequired(true)
-      .setStyle(TextInputStyle.Paragraph)
-      .setMaxLength(1750)
-      .setMinLength(20);
 
-    const ar = new ActionRowBuilder<TextInputBuilder>()
-      .addComponents(reasontextmodal);
+    const button = new ButtonBuilder()
+      .setCustomId(`clickhere_appeal_button_${infraction?.guild}_${infraction?.id}_${interaction.message.id}`)
+      .setEmoji("👍")
+      .setStyle(ButtonStyle.Primary)
 
-    const modal = new ModalBuilder()
-      .addComponents([ar])
-      .setTitle("Appeal")
-      .setCustomId(`appealmodal_${infraction?.id}_${interaction.message.id}`)
+    const ar = new ActionRowBuilder<ButtonBuilder>()
+      .addComponents([button])
 
-    await interaction.showModal(modal)
+    const embed = new NeutralEmbed(infraction?.guild)
+    embed.setDescription(await (await embed.translation).get("infraction.dm.appeal.clickhere"));
+    await interaction.editReply({
+      embeds: [embed],
+      components: [ar]
+    })
   }
 
   static async createAppealActionRow(guildid: string): Promise<ActionRowBuilder<ButtonBuilder> | null> {
@@ -99,9 +98,31 @@ export class AppealHandler {
 
     const split = interaction.customId.split("_");
     // TODO: Check if already sent (maybe grey out buttons)
+    if(split[0] === "clickhere") {
+      if(interaction.type != InteractionType.MessageComponent) return;
 
-    if(split[0] === "appealmodal") {
+      const translation = (await (new Translation()).init((await Translation.getGuildLangCode(split[3]))));
+
+      const reasontextmodal = new TextInputBuilder()
+        .setLabel(await translation.get("infraction.appeal.reason"))
+        .setCustomId("reason")
+        .setRequired(true)
+        .setStyle(TextInputStyle.Paragraph)
+        .setMaxLength(1750)
+        .setMinLength(20);
+
+      const ar = new ActionRowBuilder<TextInputBuilder>()
+        .addComponents(reasontextmodal);
+
+      const modal = new ModalBuilder()
+        .addComponents([ar])
+        .setTitle("Appeal")
+        .setCustomId(`appealmodal_${split[4]}_${split[5]}_${interaction.message.id}`)
+
+      await interaction.showModal(modal)
+    } else if(split[0] === "appealmodal") {
       if(interaction.type != InteractionType.ModalSubmit) return;
+      await interaction.deferReply()
       // Haha, I implemented it anyways...
       const id = split[1];
       const mid = split[2];
@@ -125,13 +146,28 @@ export class AppealHandler {
           status: AppealStatus.Open
         }
       });
+      const button = new ButtonBuilder()
+        .setCustomId(`clickhere_appeal_button___`)
+        .setEmoji("👍")
+        .setStyle(ButtonStyle.Primary)
+        .setDisabled(true)
+
+      const ar = new ActionRowBuilder<ButtonBuilder>()
+        .addComponents([button])
+
+      const clickhere_message = await (await Bot.Client.channels.fetch(interaction.channelId!) as DMChannel).messages.fetch(split[3]);
+
+      await clickhere_message.edit({
+        components: [ar]
+      })
+
       const newbtn = await AppealHandler.createAppealActionRow(infraction?.guild!);
       if(newbtn === null) return;
       newbtn.components[0].setDisabled(true);
       await message?.edit({
         components: [newbtn]
       })
-      await interaction.reply({
+      await interaction.editReply({
         content: await (await (new Translation()).init(await Translation.getGuildLangCode(infraction?.guild!))).get("infraction.dm.appeal.sent")
       })
       this.sendToAdmins(ifap, infraction!);
