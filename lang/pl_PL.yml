@@ -70,6 +70,8 @@ infraction.appeal.embed.accepted: "Zaakceptowano."
 infraction.appeal.embed.denied: "Odmówiono."
 infraction.appeal.embed.blocked: "Odmówiono apelacji, oraz zablokowano autora przed tworzeniem następnych apelacji"
 
+infraction.dm.appeal.clickhere: "Proszę o naciśnięcie poniższego przycisku, aby napisać apelacje."
+
 infraction.dm.appeal.accepted: "zaakceptowana"
 infraction.dm.appeal.denied: "odmówiona"
 infraction.dm.appeal.response: "Ta apelacja została {ADMINRESPONSE}."

@@ -69,6 +69,8 @@ infraction.appeal.embed.accepted: "Апеляція була прийнята."
 infraction.appeal.embed.denied: "Апеляція була відхилена."
 infraction.appeal.embed.blocked: "Апеляція була відхилена, а користувачеві було заблоковано можливість створювати нові апеляції."
 
+infraction.dm.appeal.clickhere: "Будь ласка, натисніть кнопку нижче, щоб написати апеляцію."
+
 infraction.dm.appeal.accepted: "прийнята"
 infraction.dm.appeal.denied: "відхилена"
 infraction.dm.appeal.response: "Апеляція була {ADMINRESPONSE}."
