@@ -2,7 +2,7 @@ flag: "🇵🇱"
 
 error.invalid-user: "Podano nieprawidłowego użytkownika."
 error.reason-too-long: "Podany powód ma powyżej 300 znaków."
-error.user-is-admin: "Ten użytkownik jest moderatorem, lub właścicielem."
+error.user-is-admin: "Ten użytkownik jest moderatorem lub właścicielem."
 error.executor-not-admin: "Nie jesteś moderatorem."
 error.bot-no-perms: "Nie mam permisji `{PERM}`."
 error.member-no-perms: "Nie masz permisji `{PERM}`."
