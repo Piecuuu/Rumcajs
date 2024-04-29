@@ -1,5 +1,5 @@
 #init
-flag: "🇺🇸"
+flag: "🇻🇦"
 
 error.invalid-user: "Provided an invalid user or a non-existent one."
 error.reason-too-long: "Provided reason is over 300 characters long."
