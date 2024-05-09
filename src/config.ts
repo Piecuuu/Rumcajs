@@ -33,7 +33,6 @@ export const Owners: string[] = [
 export const EchoUsers: string[] = [
   "633313654283960330",
   "829040180937097246",
-  "678191118063632388",
   "678191118063632388"
 ]
 
