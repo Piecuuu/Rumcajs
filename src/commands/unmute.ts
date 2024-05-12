@@ -7,8 +7,6 @@ import { ErrorEmbed, SuccessEmbed, invalidUserEmbed } from "../misc/embeds.js";
 import { UserActions } from "../types.js";
 import { RumcajsId } from "../misc/id.js";
 
-//unmute jebanen użytkowniken i chujen
-
 @Discord()
 class Unmute {
   @Slash({

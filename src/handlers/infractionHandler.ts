@@ -110,7 +110,6 @@ const sendToChannel = async (channel: TextChannel, infraction: DBInfraction) => 
     value: `\`${infraction.reason}\``,
     inline: false
   }) */
-  //! dupa Mervexia uwu kawaii onii-chan
   let modEmbed: InfractionEmbed;
   if(infraction.type == InfractionType.Warn) {
     const e = (await new InfractionEmbed(channel.guild.id).init(user, moderator, infraction))
