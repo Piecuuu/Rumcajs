@@ -35,7 +35,7 @@
     "getos": "^3.2.1",
     "jsonwebtoken": "^9.0.0",
     "moment": "^2.29.4",
-    "nanoid": "^4.0.2",
+    "nanoid": "^5.0.9",
     "os-name": "^5.1.0",
     "pagination.djs": "^4.0.9",
     "yaml": "^2.2.2"
