@@ -11,7 +11,7 @@ export const apiLogMiddleware = async (req: Request, res: Response, next: NextFu
     id: string, ip: string, method: string, apiUserId: string, path: string, data: string | {body: string, headers?: string}
   } = {
     id: RumcajsId.generateId(),
-    ip: req.ip,
+    ip: req.ip!,
     method: req.method,
     apiUserId: getUserIdByToken(req.headers.authorization!)! as string,
     path: req.url,

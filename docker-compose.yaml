@@ -1,0 +1,35 @@
+services:
+  #postgres:
+  #  image: postgres:15
+  #  hostname: postgres_db
+  #  container_name: postgres_db
+  #  restart: always
+  #  environment:
+  #    POSTGRES_DB: rumcajs
+  #    POSTGRES_USER: postgres
+  #    POSTGRES_PASSWORD: bomba
+  #  ports:
+  #    - '5432:5432'
+  #  networks:
+  #    - prisma-network
+  #  healthcheck:
+  #    test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
+  #    interval: 5s
+  #    timeout: 2s
+  #    retries: 20
+  rumcajs:
+    build: 
+      context: .  
+      dockerfile: Dockerfile
+    stdin_open: true
+    tty: true  # Keeps the container running for debugging
+#    depends_on:
+#      postgres:
+#        condition: service_healthy
+    env_file:
+      - .env
+    #networks:
+    #  - prisma-network
+#networks:
+#  prisma-network:
+#    name: prisma-network

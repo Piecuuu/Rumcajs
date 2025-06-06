@@ -12,22 +12,7 @@ class readyEvent {
     await Bot.Client.guilds.fetch().then(() => {
       logger.debug("Guilds fetched.")
     });
-    await Bot.Client.initApplicationCommands({
-      /*guild: {
-        disable: {
-          add: true,
-          delete: true,
-          update: true
-        }
-      },*/
-      /*global: {
-        disable: {
-          add: true,
-          delete: true,
-          update: true
-        }
-      },*/
-    }).then(() => {
+    await Bot.Client.initApplicationCommands().then(() => {
       logger.debug("Done registering commands!")
     })
 

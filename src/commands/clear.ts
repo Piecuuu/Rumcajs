@@ -129,7 +129,7 @@ class clearCommand {
 
           await Database.Db.userAction.create(((dbSettings.provider == "sqlite") ? sqlited : data) as any).catch(() => {})
 
-          channel ?? await interaction.channel?.send({
+          channel ?? await (interaction.channel! as BaseGuildTextChannel).send({
             embeds: [e]
           })
         })

@@ -1,4 +1,4 @@
-import { ApplicationCommandOptionType, Channel, ChatInputCommandInteraction, MessageReaction, Role, User } from "discord.js";
+import { ApplicationCommandOptionType, Channel, ChatInputCommandInteraction, MessageReaction, Role, User, BaseGuildTextChannel } from "discord.js";
 import { Discord, Guard, Slash, SlashGroup, SlashOption } from "discordx";
 import { APIGuild } from "../api/routes/guild.js";
 import { dbSettings } from "../config.js";
@@ -362,7 +362,7 @@ class Config {
       return flagregex.test(reaction.emoji.name!) && user.id === interaction.user.id;
     };
 
-    const message = await interaction.channel?.send({
+    const message = await (interaction.channel! as BaseGuildTextChannel).send({
       embeds: [reactheremebed]
     })
 
