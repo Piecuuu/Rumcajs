@@ -52,7 +52,7 @@ common.error.number-negative: "Nie można przetworzyć negatynego numeru."
 
 infraction.neutral.embed.title.member-kicked: "Użytkownik Wyrzucony"
 infraction.neutral.embed.title.member-muted: "Użytkownik Wyciszony"
-infraction.neutral.embed.title.member-banned: "Użytkownik Zbanowany"
+infraction.neutral.embed.title.member-banned: "Śmieci zostały sprzątnięte 🧹"
 infraction.neutral.embed.title.member-warned: "Użytkownik Ostrzeżony"
 
 infraction.neutral.embed.fields.time: "Czas"
