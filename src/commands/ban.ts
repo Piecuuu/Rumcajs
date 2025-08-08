@@ -37,19 +37,19 @@ class Ban {
     })
     reason: string,
     @SlashOption({
-      name: "ephemeral",
-      description: "Ephemeral (silent)",
-      type: ApplicationCommandOptionType.Boolean,
-      required: false
-    })
-    ephemeral: boolean,
-    @SlashOption({
       name: "delete_message_time",
       description: "Delete messages from the user",
       type: ApplicationCommandOptionType.String,
       required: false
     })
     deleteMessageTime: string | null,
+    @SlashOption({
+      name: "ephemeral",
+      description: "Ephemeral (silent)",
+      type: ApplicationCommandOptionType.Boolean,
+      required: false
+    })
+    ephemeral: boolean,
 
     interaction: CommandInteraction
   ) {
