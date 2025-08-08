@@ -12,6 +12,7 @@ import { PermissionsCheck } from "../misc/permcheck.js";
 import { InfractionType } from "../types.js";
 import { RumcajsId } from "../misc/id.js";
 import { AppealHandler } from "../handlers/appealHandler.js";
+import { Format } from "../misc/format.js";
 
 @Discord()
 class Ban {
@@ -42,6 +43,13 @@ class Ban {
       required: false
     })
     ephemeral: boolean,
+    @SlashOption({
+      name: "delete_message_time",
+      description: "Delete messages from the user",
+      type: ApplicationCommandOptionType.String,
+      required: false
+    })
+    deleteMessageTime: string | null,
 
     interaction: CommandInteraction
   ) {
@@ -137,7 +145,8 @@ class Ban {
 
       try {
         member.ban({
-          reason: `${reason} | ${out.id}`
+          reason: `${reason} | ${out.id}`,
+          deleteMessageSeconds: deleteMessageTime ? Format.convertToMilliseconds(deleteMessageTime) : undefined
         }).then(() => {
           infractionEmitter.emit("send", out)
         })
