@@ -143,10 +143,12 @@ class Ban {
         }).catch(() => {})
       }
 
+      const clamp = (num: number, min: number, max: number) => Math.min(Math.max(num, min), max);
+
       try {
         member.ban({
           reason: `${reason} | ${out.id}`,
-          deleteMessageSeconds: deleteMessageTime ? Format.convertToMilliseconds(deleteMessageTime) : undefined
+          deleteMessageSeconds: deleteMessageTime ? clamp(Math.ceil(Format.convertToMilliseconds(deleteMessageTime) / 1000), 0, 604800) : undefined // cap at 7 days as per discord's api docs
         }).then(() => {
           infractionEmitter.emit("send", out)
         })
